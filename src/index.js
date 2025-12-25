@@ -1,8 +1,7 @@
-import dotenv from 'dotenv';
-dotenv.config();
+require('dotenv').config();
 
-import app from './app';
-import { connectToMongoDB } from './config/mongo_db';
+const app = require('./app');
+const { connectToMongoDB } = require('./config/mongo_db');
 
 const PORT = process.env.PORT || 5000;
 

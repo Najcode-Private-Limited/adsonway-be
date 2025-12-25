@@ -1,12 +1,12 @@
-import express from 'express';
-import cors from 'cors';
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './config/swagger/index';
+const express = require('express');
+const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger/index');
 
 const app = express();
 
 /* ---------------- Routes imports ---------------- */
-import authRoutes from './routes/auth';
+const authRoutes = require('./routes/auth');
 
 /* ---------------- Middleware ---------------- */
 app.use(cors());
@@ -24,4 +24,4 @@ app.get('/', (_req, res) => {
    return res.status(200).json({ message: 'API is running' });
 });
 
-export default app;
+module.exports = app;

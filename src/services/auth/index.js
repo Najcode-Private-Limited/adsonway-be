@@ -1,10 +1,8 @@
-import { comparePassword, hashPassword } from '../../functions';
-import { createUser, getUserByUsername } from '../../repositories/user';
-import { signToken } from '../../utils/jwt';
-import { LoginInterface } from '../../types/index';
-import { UserDocument } from '../../models/user';
+const { comparePassword, hashPassword } = require('../../functions');
+const { createUser, getUserByUsername } = require('../../repositories/user');
+const { signToken } = require('../../utils/jwt');
 
-export const loginService = async (payload: LoginInterface) => {
+const loginService = async (payload) => {
    const user = await getUserByUsername(payload.username);
 
    if (!user) {
@@ -24,7 +22,7 @@ export const loginService = async (payload: LoginInterface) => {
 
    const isPasswordValid = await comparePassword(
       payload.password,
-      user.password as string
+      user.password
    );
 
    if (!isPasswordValid) {
@@ -37,7 +35,7 @@ export const loginService = async (payload: LoginInterface) => {
 
    const token = signToken({
       userId: user._id.toString(),
-      role: user.role as string,
+      role: user.role,
    });
 
    const userData = user.toObject();
@@ -52,7 +50,7 @@ export const loginService = async (payload: LoginInterface) => {
    };
 };
 
-export const createAdminService = async (payload: any) => {
+const createAdminService = async (payload) => {
    const admin = await getUserByUsername(payload.username);
    if (admin) {
       return {
@@ -71,7 +69,7 @@ export const createAdminService = async (payload: any) => {
       disabled: false,
       isVerified: false,
       display_picture: null,
-   } as UserDocument);
+   });
 
    if (!newAdmin) {
       return {
@@ -83,7 +81,7 @@ export const createAdminService = async (payload: any) => {
 
    const token = signToken({
       userId: newAdmin._id.toString(),
-      role: newAdmin.role as string,
+      role: newAdmin.role,
    });
 
    const userData = newAdmin.toObject();
@@ -97,4 +95,9 @@ export const createAdminService = async (payload: any) => {
          token: token,
       },
    };
+};
+
+module.exports = {
+   loginService,
+   createAdminService,
 };

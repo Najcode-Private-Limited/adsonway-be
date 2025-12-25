@@ -1,7 +1,5 @@
-import swaggerJSDoc from 'swagger-jsdoc';
-import path from 'path';
-
-const NODE_ENV = process.env.NODE_ENV;
+const swaggerJSDoc = require('swagger-jsdoc');
+const path = require('path');
 
 const options = {
    definition: {
@@ -26,8 +24,8 @@ const options = {
          },
       },
    },
-   apis: [path.resolve(__dirname, '../../docs/**/*.ts')],
+   apis: [path.resolve(__dirname, '../../docs/**/*.js')],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-export default swaggerSpec;
+module.exports = swaggerSpec;

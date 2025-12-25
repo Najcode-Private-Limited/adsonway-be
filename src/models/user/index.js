@@ -1,10 +1,6 @@
-import mongoose from 'mongoose';
-import { UserInterface } from '../../types/index';
+const mongoose = require('mongoose');
 
-export interface UserDocument
-   extends Omit<UserInterface, '_id'>, mongoose.Document {}
-
-const userSchema = new mongoose.Schema<UserDocument>(
+const userSchema = new mongoose.Schema(
    {
       full_name: {
          type: String,
@@ -53,5 +49,5 @@ const userSchema = new mongoose.Schema<UserDocument>(
    { timestamps: true }
 );
 
-const User = mongoose.model<UserDocument>('User', userSchema);
-export default User;
+const User = mongoose.model('User', userSchema);
+module.exports = User;

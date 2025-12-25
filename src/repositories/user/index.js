@@ -1,38 +1,31 @@
-import User, { UserDocument } from '../../models/user/index';
+const User = require('../../models/user/index');
 
 /* ---------------- Create User ---------------- */
-export const createUser = async (user: any): Promise<UserDocument | null> => {
+const createUser = async (user) => {
    const newUser = await User.create(user);
    return newUser;
 };
 
 /* ---------------- Get User by ID ---------------- */
-export const getUserById = async (id: string): Promise<UserDocument | null> => {
+const getUserById = async (id) => {
    const user = await User.findById(id).select('-password');
    return user;
 };
 
 /* ---------------- Get User by Email ---------------- */
-export const getUserByEmail = async (
-   email: string
-): Promise<UserDocument | null> => {
+const getUserByEmail = async (email) => {
    const user = await User.findOne({ email }).select('-password');
    return user;
 };
 
 /* ---------------- Get User by Username ---------------- */
-export const getUserByUsername = async (
-   username: string
-): Promise<UserDocument | null> => {
+const getUserByUsername = async (username) => {
    const user = await User.findOne({ username });
    return user;
 };
 
 /* ---------------- Update User ---------------- */
-export const updateUser = async (
-   id: string,
-   user: UserDocument
-): Promise<UserDocument | null> => {
+const updateUser = async (id, user) => {
    const updatedUser = await User.findByIdAndUpdate(id, user, {
       new: true,
    }).select('-password');
@@ -40,6 +33,15 @@ export const updateUser = async (
 };
 
 /* ---------------- Delete User ---------------- */
-export const deleteUser = async (id: string): Promise<boolean> => {
+const deleteUser = async (id) => {
    return !!(await User.findByIdAndDelete(id));
+};
+
+module.exports = {
+   createUser,
+   getUserById,
+   getUserByEmail,
+   getUserByUsername,
+   updateUser,
+   deleteUser,
 };
