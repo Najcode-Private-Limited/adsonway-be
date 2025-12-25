@@ -80,3 +80,58 @@
  *                   type: string
  *                   description: The message of the error
  * */
+
+/**
+ * @swagger
+ * /api/auth/create-admin:
+ *   post:
+ *     summary: Create a new admin
+ *     description: Create a new admin
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: The username of the admin
+ *               password:
+ *                 type: string
+ *                 description: The password of the admin
+ *               full_name:
+ *                 type: string
+ *                 description: The full name of the admin
+ *               email:
+ *                 type: string
+ *                 description: The email of the admin
+ *               phone_number:
+ *                 type: string
+ *                 description: The phone number of the admin
+ *               organization:
+ *                 type: string
+ *                 description: The organization of the admin
+ *     responses:
+ *       200:
+ *         description: Admin created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: The message of the error
+ *       400:
+ *         description: Failed to create admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: The message of the error
+ * */

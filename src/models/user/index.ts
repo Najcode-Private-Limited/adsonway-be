@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import { UserInterface } from '../../types/index';
 
-export interface UserDocument extends UserInterface, Document {}
+export interface UserDocument
+   extends Omit<UserInterface, '_id'>, mongoose.Document {}
 
 const userSchema = new mongoose.Schema<UserDocument>(
    {

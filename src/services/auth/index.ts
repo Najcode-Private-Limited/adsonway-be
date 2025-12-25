@@ -1,13 +1,12 @@
-import { comparePassword } from '../../functions';
-import { getUserByUsername } from '../../repositories/user';
+import { comparePassword, hashPassword } from '../../functions';
+import { createUser, getUserByUsername } from '../../repositories/user';
 import { signToken } from '../../utils/jwt';
 import { LoginInterface } from '../../types/index';
+import { UserDocument } from '../../models/user';
 
 export const loginService = async (payload: LoginInterface) => {
-   /* ---------------- Get User by Username ---------------- */
    const user = await getUserByUsername(payload.username);
 
-   /* ---------------- Check if User exists ---------------- */
    if (!user) {
       return {
          success: false,
@@ -15,7 +14,6 @@ export const loginService = async (payload: LoginInterface) => {
          data: null,
       };
    }
-   /* ---------------- Check if User is disabled ---------------- */
    if (user.disabled) {
       return {
          success: false,
@@ -24,13 +22,11 @@ export const loginService = async (payload: LoginInterface) => {
       };
    }
 
-   /* ---------------- Check if Password is valid ---------------- */
    const isPasswordValid = await comparePassword(
       payload.password,
       user.password as string
    );
 
-   /* ---------------- Check if Password is invalid ---------------- */
    if (!isPasswordValid) {
       return {
          success: false,
@@ -39,13 +35,65 @@ export const loginService = async (payload: LoginInterface) => {
       };
    }
 
-   /* ---------------- Generate Token ---------------- */
-   const token = signToken({ userId: user._id.toString(), role: user.role });
+   const token = signToken({
+      userId: user._id.toString(),
+      role: user.role as string,
+   });
+
+   const userData = user.toObject();
+   delete userData.password;
    return {
       success: true,
       message: 'Login successful',
       data: {
-         user: user,
+         user: userData,
+         token: token,
+      },
+   };
+};
+
+export const createAdminService = async (payload: any) => {
+   const admin = await getUserByUsername(payload.username);
+   if (admin) {
+      return {
+         success: false,
+         message: 'Admin already exists',
+         data: null,
+      };
+   }
+
+   const hashedPassword = await hashPassword(payload.password);
+   payload.password = hashedPassword;
+
+   const newAdmin = await createUser({
+      ...payload,
+      role: 'admin',
+      disabled: false,
+      isVerified: false,
+      display_picture: null,
+   } as UserDocument);
+
+   if (!newAdmin) {
+      return {
+         success: false,
+         message: 'Failed to create admin',
+         data: null,
+      };
+   }
+
+   const token = signToken({
+      userId: newAdmin._id.toString(),
+      role: newAdmin.role as string,
+   });
+
+   const userData = newAdmin.toObject();
+   delete userData.password;
+
+   return {
+      success: true,
+      message: 'Admin created successfully',
+      data: {
+         user: userData,
          token: token,
       },
    };

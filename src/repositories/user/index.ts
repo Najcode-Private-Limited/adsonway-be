@@ -1,7 +1,7 @@
 import User, { UserDocument } from '../../models/user/index';
 
 /* ---------------- Create User ---------------- */
-export const createUser = async (user: UserDocument): Promise<UserDocument> => {
+export const createUser = async (user: any): Promise<UserDocument | null> => {
    const newUser = await User.create(user);
    return newUser;
 };
@@ -24,7 +24,7 @@ export const getUserByEmail = async (
 export const getUserByUsername = async (
    username: string
 ): Promise<UserDocument | null> => {
-   const user = await User.findOne({ username }).select('-password');
+   const user = await User.findOne({ username });
    return user;
 };
 
