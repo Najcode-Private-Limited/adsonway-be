@@ -1,23 +1,33 @@
-import swaggerAutogen from 'swagger-autogen';
+import swaggerJSDoc from 'swagger-jsdoc';
+import path from 'path';
 
-const swagger = swaggerAutogen();
+const NODE_ENV = process.env.NODE_ENV;
 
-const doc = {
-   info: {
-      title: 'My API',
-      description: 'Auto generated Swagger (no manual docs)',
+const options = {
+   definition: {
+      openapi: '3.0.0',
+      info: {
+         title: 'Pet Caart API',
+         version: '1.0.0',
+         description: 'API documentation for Pet Caart',
+      },
+      servers: [
+         {
+            url: process.env.API_URL,
+         },
+      ],
+      components: {
+         securitySchemes: {
+            bearerAuth: {
+               type: 'http',
+               scheme: 'bearer',
+               bearerFormat: 'JWT',
+            },
+         },
+      },
    },
-   host: 'localhost:3000',
-   schemes: ['http'],
+   apis: [path.resolve(__dirname, '../../docs/**/*.ts')],
 };
 
-const outputFile = './swagger-output.json';
-
-/**
- * IMPORTANT:
- * Point to your REAL entry file
- * swagger-autogen will follow imports automatically
- */
-const endpointsFiles = ['./src/index.ts'];
-
-swagger(outputFile, endpointsFiles, doc);
+const swaggerSpec = swaggerJSDoc(options);
+export default swaggerSpec;

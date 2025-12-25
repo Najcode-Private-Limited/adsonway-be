@@ -1,26 +1,27 @@
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
-import swaggerFile from './config/swagger/swagger-output.json';
+import swaggerSpec from './config/swagger/index';
 
 const app = express();
 
+/* ---------------- Routes imports ---------------- */
+import authRoutes from './routes/auth';
+
+/* ---------------- Middleware ---------------- */
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/api/users/:id', (req, res) => {
-   res.json({ id: req.params.id });
-});
+/* ---------------- Swagger Documentation ---------------- */
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.post('/api/users', (req, res) => {
-   res.json(req.body);
-});
+/* ---------------- Routes ---------------- */
+app.use('/api/auth', authRoutes);
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
-
+/* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {
-   res.send('API is running');
+   return res.status(200).json({ message: 'API is running' });
 });
 
 export default app;
