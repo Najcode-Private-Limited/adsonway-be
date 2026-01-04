@@ -7,6 +7,8 @@ const app = express();
 
 /* ---------------- Routes imports ---------------- */
 const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
+const agentRoutes = require('./routes/agent');
 
 /* ---------------- Middleware ---------------- */
 app.use(cors());
@@ -18,6 +20,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /* ---------------- Routes ---------------- */
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/agent', agentRoutes);
 
 /* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {

@@ -37,6 +37,14 @@ const deleteUser = async (id) => {
    return !!(await User.findByIdAndDelete(id));
 };
 
+/* ---------------- Check Existing Instance ---------------- */
+const checkExiststingInstance = async (username, email) => {
+   const user = await User.findOne({
+      $or: [{ username }, { email }],
+   });
+   return !!user;
+};
+
 module.exports = {
    createUser,
    getUserById,
@@ -44,4 +52,5 @@ module.exports = {
    getUserByUsername,
    updateUser,
    deleteUser,
+   checkExiststingInstance,
 };

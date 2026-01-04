@@ -20,6 +20,16 @@ const userSchema = new mongoose.Schema(
          type: String,
          required: true,
       },
+      role: {
+         type: String,
+         enum: ['admin', 'agent', 'user'],
+         default: 'user',
+      },
+      createdBy: {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: 'User',
+         default: null,
+      },
       disabled: {
          type: Boolean,
          default: false,
@@ -28,11 +38,7 @@ const userSchema = new mongoose.Schema(
          type: Boolean,
          default: false,
       },
-      role: {
-         type: String,
-         enum: ['admin', 'agent', 'super_admin', 'user'],
-         default: 'admin',
-      },
+
       display_picture: {
          type: String,
          default: null,
@@ -49,5 +55,4 @@ const userSchema = new mongoose.Schema(
    { timestamps: true }
 );
 
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+module.exports = mongoose.model('User', userSchema);

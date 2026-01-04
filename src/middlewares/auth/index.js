@@ -1,0 +1,117 @@
+const jwt = require('jsonwebtoken');
+const user = require('../../models/user');
+const ApiResponse = require('../../utils/api_response');
+
+const isAdmin = async (req, res, next) => {
+   try {
+      const token = req.headers.authorization?.split(' ')[1];
+
+      console.log(token, '>>>> token');
+
+      if (!token) {
+         return res
+            .status(401)
+            .json(new ApiResponse(401, null, 'Unauthorized', false));
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      console.log(decoded, '>>>> decoded');
+
+      const admin = await user.findById(decoded.userId);
+
+      console.log(admin, '>>>> admin');
+
+      if (!admin || admin.role !== 'admin') {
+         return res
+            .status(403)
+            .json(
+               new ApiResponse(
+                  403,
+                  null,
+                  'Access denied, This action requires admin role',
+                  false
+               )
+            );
+      }
+
+      req.admin = admin;
+      next();
+   } catch (error) {
+      res.status(403).json(
+         new ApiResponse(403, null, 'Invalid or expired token', false)
+      );
+   }
+};
+
+const isUser = async (req, res, next) => {
+   try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (!token) {
+         return res
+            .status(401)
+            .json(new ApiResponse(401, null, 'Unauthorized', false));
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      const user = await user.findById(decoded.userId);
+
+      if (!user || user.role !== 'user') {
+         return res
+            .status(403)
+            .json(
+               new ApiResponse(
+                  403,
+                  null,
+                  'Access denied, This action requires user role',
+                  false
+               )
+            );
+      }
+
+      req.user = user;
+      next();
+   } catch (error) {
+      res.status(403).json(
+         new ApiResponse(403, null, 'Invalid or expired token', false)
+      );
+   }
+};
+
+const isAgent = async (req, res, next) => {
+   try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (!token) {
+         return res
+            .status(401)
+            .json(new ApiResponse(401, null, 'Unauthorized', false));
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      const agent = await user.findById(decoded.userId);
+
+      if (!agent || agent.role !== 'agent') {
+         return res
+            .status(403)
+            .json(
+               new ApiResponse(
+                  403,
+                  null,
+                  'Access denied, This action requires agent role',
+                  false
+               )
+            );
+      }
+
+      req.agent = agent;
+      next();
+   } catch (error) {
+      res.status(403).json(
+         new ApiResponse(403, null, 'Invalid or expired token', false)
+      );
+   }
+};
+
+module.exports = { isAdmin, isUser, isAgent };

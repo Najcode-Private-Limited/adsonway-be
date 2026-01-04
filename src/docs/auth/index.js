@@ -1,9 +1,9 @@
 /**
  * @swagger
- * /api/auth/login-admin:
+ * /api/auth/login:
  *   post:
- *     summary: Login as admin
- *     description: Login as admin
+ *     summary: Login as (admin/agent/user)
+ *     description: Login as (admin/agent/user)
  *     tags: [Auth]
  *     requestBody:
  *       required: true
