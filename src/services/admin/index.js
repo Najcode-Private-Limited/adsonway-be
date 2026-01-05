@@ -1,5 +1,9 @@
 const { hashPassword } = require('../../functions');
 const {
+   getUsersByRole,
+   getUsersCreatedByAgent,
+} = require('../../repositories/user');
+const {
    checkExiststingInstance,
    createUser,
 } = require('../../repositories/user');
@@ -85,5 +89,59 @@ exports.createAgent = async (agentData) => {
       success: true,
       message: 'Agent created successfully',
       data: userData,
+   };
+};
+
+exports.getAllAdminService = async () => {
+   const admins = await getUsersByRole('admin');
+   if (!admins) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve admins',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Admins retrieved successfully',
+      data: admins,
+   };
+};
+
+exports.getAllAgentService = async () => {
+   const agents = await getUsersByRole('agent');
+   if (!agents) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve agents',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Agents retrieved successfully',
+      data: agents,
+   };
+};
+
+exports.getAllUsersForSpecificAgentService = async (agentId) => {
+   const users = await getUsersCreatedByAgent(agentId);
+   if (!users) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve users for the specified agent',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Users retrieved successfully for the specified agent',
+      data: users,
    };
 };

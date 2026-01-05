@@ -1,4 +1,10 @@
-const { createAdmin, createAgent } = require('../../services/admin');
+const {
+   createAdmin,
+   createAgent,
+   getAllAdminService,
+   getAllAgentService,
+   getAllUsersForSpecificAgentService,
+} = require('../../services/admin');
 const ApiResponse = require('../../utils/api_response/index');
 const { asyncHandler } = require('../../utils/async_handler/index');
 
@@ -55,5 +61,58 @@ exports.handleCreateAgent = asyncHandler(async (req, res) => {
       .status(201)
       .json(
          new ApiResponse(201, agent.data, 'Agent created successfully', true)
+      );
+});
+
+exports.handleGetAllAdmins = asyncHandler(async (req, res) => {
+   const admins = await getAllAdminService();
+   if (!admins.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, admins.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            admins.data,
+            'Admins retrieved successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllAgents = asyncHandler(async (req, res) => {
+   const agents = await getAllAgentService();
+   if (!agents.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, agents.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            agents.data,
+            'Agents retrieved successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllUsersForSpecificAgent = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+   const users = await getAllUsersForSpecificAgentService(id);
+   if (!users.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, users.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(200, users.data, 'Users retrieved successfully', true)
       );
 });

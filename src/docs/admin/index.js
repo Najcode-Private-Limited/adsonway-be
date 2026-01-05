@@ -107,6 +107,7 @@
  *       403:
  *         description: Only admin can create agents
  */
+
 /**
  * @swagger
  * /api/admin/create-agent:
@@ -152,4 +153,92 @@
  *               $ref: '#/components/schemas/User'
  *       403:
  *         description: Only agent can create users
+ */
+
+/**
+ * @swagger
+ * /api/admin/get-admins:
+ *   get:
+ *     summary: Get all admins
+ *     description: Fetches a list of all admin users. Accessible only by admins.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of admins
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Access denied
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/admin/get-agents:
+ *   get:
+ *     summary: Get all agents
+ *     description: Fetches all agents created in the system. Accessible only by admins.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of agents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Access denied
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/admin/get-users/{id}:
+ *   get:
+ *     summary: Get users created by a specific agent
+ *     description: Fetches all users created by the given agent ID. Accessible only by admins.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: Agent ID
+ *         schema:
+ *           type: string
+ *           example: 507f1f77bcf86cd799439012
+ *     responses:
+ *       200:
+ *         description: List of users under the agent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid agent ID
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Access denied
+ *       500:
+ *         description: Internal server error
  */

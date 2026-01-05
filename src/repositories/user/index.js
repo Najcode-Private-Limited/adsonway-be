@@ -18,6 +18,13 @@ const getUserByEmail = async (email) => {
    return user;
 };
 
+/* ---------------- Get Users by Role ---------------- */
+
+const getUsersByRole = async (role) => {
+   const users = await User.find({ role }).select('-password');
+   return users;
+};
+
 /* ---------------- Get User by Username ---------------- */
 const getUserByUsername = async (username) => {
    const user = await User.findOne({ username });
@@ -45,6 +52,14 @@ const checkExiststingInstance = async (username, email) => {
    return !!user;
 };
 
+/* ---------------- Get Users Created By Agent ---------------- */
+const getUsersCreatedByAgent = async (agentId) => {
+   const users = await User.find({ createdBy: agentId, role: 'user' })
+      .select('-password')
+      .populate('createdBy', 'username email full_name');
+   return users;
+};
+
 module.exports = {
    createUser,
    getUserById,
@@ -53,4 +68,6 @@ module.exports = {
    updateUser,
    deleteUser,
    checkExiststingInstance,
+   getUsersByRole,
+   getUsersCreatedByAgent,
 };
