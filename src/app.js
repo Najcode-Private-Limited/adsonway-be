@@ -22,6 +22,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/agent', agentRoutes);
+app.use('/api/payment-method', require('./routes/payment_method'));
 
 /* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {
