@@ -23,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/agent', agentRoutes);
 app.use('/api/payment-method', require('./routes/payment_method'));
+app.use('/api/upload', require('./routes/upload'));
 
 /* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {
