@@ -139,7 +139,7 @@
 /**
  * @swagger
  * /api/payment-method/update-payment-method/{id}:
- *   put:
+ *   patch:
  *     summary: Update payment method
  *     tags: [Payment Method]
  *     security:

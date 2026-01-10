@@ -18,7 +18,7 @@ router
    .post(isAdmin, handleCreatePaymentMethod);
 router
    .route('/update-payment-method/:id')
-   .put(isAdmin, handleUpdatePaymentMethod);
+   .patch(isAdmin, handleUpdatePaymentMethod);
 router
    .route('/delete-payment-method/:id')
    .delete(isAdmin, handleDeletePaymentMethod);

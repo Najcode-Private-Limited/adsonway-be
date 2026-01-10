@@ -5,6 +5,7 @@ const {
    handleGetAllAdmins,
    handleGetAllAgents,
    handleGetAllUsersForSpecificAgent,
+   handleUpdateAdminProfile,
 } = require('../../controllers/admin');
 const { isAdmin } = require('../../middlewares/auth');
 const router = express.Router();
@@ -14,5 +15,6 @@ router.route('/create-agent').post(isAdmin, handleCreateAgent);
 router.route('/get-admins').get(isAdmin, handleGetAllAdmins);
 router.route('/get-agents').get(isAdmin, handleGetAllAgents);
 router.route('/get-users/:id').get(isAdmin, handleGetAllUsersForSpecificAgent);
+router.route('/update-profile').patch(isAdmin, handleUpdateAdminProfile);
 
 module.exports = router;

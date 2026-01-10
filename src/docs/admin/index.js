@@ -242,3 +242,50 @@
  *       500:
  *         description: Internal server error
  */
+
+/**
+ * @swagger
+ * /api/admin/update-profile:
+ *   patch:
+ *     tags:
+ *       - Admin
+ *     summary: Update admin profile
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               full_name:
+ *                 type: string
+ *                 example: John Doe
+ *               username:
+ *                 type: string
+ *                 example: admin_john
+ *               password:
+ *                 type: string
+ *                 example: StrongPass@123
+ *               display_picture:
+ *                 type: string
+ *                 example: https://cdn.example.com/admin.jpg
+ *               phone_number:
+ *                 type: string
+ *                 example: "+919876543210"
+ *               organization:
+ *                 type: string
+ *                 example: Acme Corp
+ *     responses:
+ *       200:
+ *         description: Admin profile updated successfully
+ *       400:
+ *         description: Validation error or password reuse
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Admin not found
+ *       500:
+ *         description: Server error
+ */

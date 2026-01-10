@@ -1,5 +1,8 @@
-const { getAllUsersForSpecificAgentService } = require('../../services/admin');
-const { createUserService } = require('../../services/agent');
+const {
+   createUserService,
+   getAllUsersForSpecificAgentService,
+   updateAgentProfileService,
+} = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
 const { asyncHandler } = require('../../utils/async_handler/index');
 
@@ -91,5 +94,28 @@ exports.handleGetAllAssociatedUsers = asyncHandler(async (req, res) => {
       .status(200)
       .json(
          new ApiResponse(200, users.data, 'Users retrieved successfully', true)
+      );
+});
+
+exports.handleUpdateAgentProfile = asyncHandler(async (req, res) => {
+   const agentId = req.agent._id;
+   const updateData = req.body;
+
+   const updatedAgent = await updateAgentProfileService(agentId, updateData);
+   if (!updatedAgent.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, updatedAgent.message, false));
+   }
+
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            updatedAgent.data,
+            'Agent profile updated successfully',
+            true
+         )
       );
 });

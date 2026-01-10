@@ -5,6 +5,7 @@ const {
 const {
    checkExiststingInstance,
    createUser,
+   getUsersCreatedByAgent,
 } = require('../../repositories/user');
 
 exports.createUserService = async (agentData, agentId) => {
@@ -77,5 +78,72 @@ exports.createUserService = async (agentData, agentId) => {
          user: userData,
          paymentFeeRule: newPaymentRuleForUser,
       },
+   };
+};
+
+exports.getAllUsersForSpecificAgentService = async (agentId) => {
+   const users = await getUsersCreatedByAgent(agentId);
+   if (!users) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve users for the specified agent',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Users retrieved successfully for the specified agent',
+      data: users,
+   };
+};
+
+exports.updateAgentProfileService = async (agentId, updateData) => {
+   const checkAgentExistance = await getUserById(agentId);
+
+   if (!checkAgentExistance) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Agent not found',
+         data: null,
+      };
+   }
+
+   const payload = {};
+   if (updateData.full_name) payload.full_name = updateData.full_name;
+   if (updateData.username) payload.username = updateData.username;
+   if (updateData.password) {
+      if (comparePassword(updateData.password, checkAgentExistance.password)) {
+         return {
+            statusCode: 400,
+            success: false,
+            message: 'New password cannot be the same as the old password',
+            data: null,
+         };
+      }
+      const hashedPassword = await hashPassword(updateData.password);
+      payload.password = hashedPassword;
+   }
+   if (updateData.display_picture)
+      payload.display_picture = updateData.display_picture;
+   if (updateData.phone_number) payload.phone_number = updateData.phone_number;
+   if (updateData.organization) payload.organization = updateData.organization;
+   const updatedAgent = await updateUser(agentId, payload);
+
+   if (!updatedAgent) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to update agent profile',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Agent profile updated successfully',
+      data: updatedAgent,
    };
 };

@@ -97,3 +97,50 @@
  *       500:
  *         description: Internal server error
  */
+
+/**
+ * @swagger
+ * /api/agent/update-profile:
+ *   patch:
+ *     tags:
+ *       - Agent
+ *     summary: Update agent profile
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               full_name:
+ *                 type: string
+ *                 example: Agent Smith
+ *               username:
+ *                 type: string
+ *                 example: agent_smith
+ *               password:
+ *                 type: string
+ *                 example: AgentPass@123
+ *               display_picture:
+ *                 type: string
+ *                 example: https://cdn.example.com/agent.jpg
+ *               phone_number:
+ *                 type: string
+ *                 example: "+918888777666"
+ *               organization:
+ *                 type: string
+ *                 example: Sales Team
+ *     responses:
+ *       200:
+ *         description: Agent profile updated successfully
+ *       400:
+ *         description: Validation error or password reuse
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Agent not found
+ *       500:
+ *         description: Server error
+ */

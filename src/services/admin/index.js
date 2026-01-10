@@ -1,9 +1,9 @@
-const { hashPassword } = require('../../functions');
+const e = require('express');
+const { hashPassword, comparePassword } = require('../../functions');
 const {
    getUsersByRole,
-   getUsersCreatedByAgent,
-} = require('../../repositories/user');
-const {
+   updateUser,
+   getUserById,
    checkExiststingInstance,
    createUser,
 } = require('../../repositories/user');
@@ -128,20 +128,51 @@ exports.getAllAgentService = async () => {
    };
 };
 
-exports.getAllUsersForSpecificAgentService = async (agentId) => {
-   const users = await getUsersCreatedByAgent(agentId);
-   if (!users) {
+exports.updateAdminProfileService = async (adminId, updateData) => {
+   const checkAdminExistance = await getUserById(adminId);
+
+   if (!checkAdminExistance) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Admin not found',
+         data: null,
+      };
+   }
+
+   const payload = {};
+   if (updateData.full_name) payload.full_name = updateData.full_name;
+   if (updateData.username) payload.username = updateData.username;
+   if (updateData.password) {
+      if (comparePassword(updateData.password, checkAdminExistance.password)) {
+         return {
+            statusCode: 400,
+            success: false,
+            message: 'New password cannot be the same as the old password',
+            data: null,
+         };
+      }
+      const hashedPassword = await hashPassword(updateData.password);
+      payload.password = hashedPassword;
+   }
+   if (updateData.display_picture)
+      payload.display_picture = updateData.display_picture;
+   if (updateData.phone_number) payload.phone_number = updateData.phone_number;
+   if (updateData.organization) payload.organization = updateData.organization;
+   const updatedAdmin = await updateUser(adminId, payload);
+
+   if (!updatedAdmin) {
       return {
          statusCode: 500,
          success: false,
-         message: 'Failed to retrieve users for the specified agent',
+         message: 'Failed to update admin profile',
          data: null,
       };
    }
    return {
       statusCode: 200,
       success: true,
-      message: 'Users retrieved successfully for the specified agent',
-      data: users,
+      message: 'Admin profile updated successfully',
+      data: updatedAdmin,
    };
 };

@@ -116,3 +116,27 @@ exports.handleGetAllUsersForSpecificAgent = asyncHandler(async (req, res) => {
          new ApiResponse(200, users.data, 'Users retrieved successfully', true)
       );
 });
+
+exports.handleUpdateAdminProfile = asyncHandler(async (req, res) => {
+   const adminId = req.admin._id;
+   const updateData = req.body;
+
+   const updatedAdmin = await updateAdminProfileService(adminId, updateData);
+
+   if (!updatedAdmin.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, updatedAdmin.message, false));
+   }
+
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            updatedAdmin.data,
+            'Admin profile updated successfully',
+            true
+         )
+      );
+});
