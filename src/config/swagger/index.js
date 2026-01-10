@@ -5,9 +5,9 @@ const options = {
    definition: {
       openapi: '3.0.0',
       info: {
-         title: 'Pet Caart API',
+         title: 'Adsonway API Documentation',
          version: '1.0.0',
-         description: 'API documentation for Pet Caart',
+         description: 'API documentation for Adsonway application',
       },
       servers: [
          {
