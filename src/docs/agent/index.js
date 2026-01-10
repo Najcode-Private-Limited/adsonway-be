@@ -34,6 +34,33 @@
  *                 type: string
  *                 example: admin
  *                 default: admin
+ *
+ *               facebook_commission:
+ *                 type: number
+ *                 example: 10
+ *               google_commission:
+ *                 type: number
+ *                 example: 10
+ *               snapchat_commission:
+ *                 type: number
+ *                 example: 10
+ *               tiktok_commission:
+ *                 type: number
+ *                 example: 10
+ *
+ *               facebook_application_fee:
+ *                 type: number
+ *                 example: 5
+ *               google_application_fee:
+ *                 type: number
+ *                 example: 5
+ *               snapchat_application_fee:
+ *                 type: number
+ *                 example: 5
+ *               tiktok_application_fee:
+ *                 type: number
+ *                 example: 5
+ *
  *     responses:
  *       201:
  *         description: User created successfully

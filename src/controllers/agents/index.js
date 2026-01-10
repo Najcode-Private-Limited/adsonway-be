@@ -4,12 +4,63 @@ const ApiResponse = require('../../utils/api_response/index');
 const { asyncHandler } = require('../../utils/async_handler/index');
 
 exports.handleCreatUser = asyncHandler(async (req, res) => {
-   const { email, username, password, full_name, role = 'user' } = req.body;
+   const {
+      email,
+      username,
+      password,
+      full_name,
+      role = 'user',
+      facebook_commission,
+      google_commission,
+      snapchat_commission,
+      tiktok_commission,
+      facebook_application_fee,
+      google_application_fee,
+      snapchat_application_fee,
+      tiktok_application_fee,
+   } = req.body;
 
    if (!email || !username || !password || !full_name) {
       return res
          .status(400)
          .json(new ApiResponse(400, null, 'All fields are required', false));
+   }
+
+   const feesAndCommissions = [
+      facebook_application_fee,
+      google_application_fee,
+      snapchat_application_fee,
+      tiktok_application_fee,
+      facebook_commission,
+      google_commission,
+      snapchat_commission,
+      tiktok_commission,
+   ];
+
+   if (feesAndCommissions.some((v) => v === undefined || v === null)) {
+      return res
+         .status(400)
+         .json(
+            new ApiResponse(
+               400,
+               null,
+               'Commission and application fee fields are required',
+               false
+            )
+         );
+   }
+
+   if (feesAndCommissions.some((v) => Number(v) < 0)) {
+      return res
+         .status(400)
+         .json(
+            new ApiResponse(
+               400,
+               null,
+               'Commission and application fee fields cannot be negative',
+               false
+            )
+         );
    }
 
    if (role !== 'user') {
