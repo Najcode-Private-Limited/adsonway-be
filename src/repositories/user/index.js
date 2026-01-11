@@ -56,7 +56,9 @@ const checkExiststingInstance = async (username, email) => {
 const getUsersCreatedByAgent = async (agentId) => {
    const users = await User.find({ createdBy: agentId, role: 'user' })
       .select('-password')
-      .populate('createdBy', 'username email full_name');
+      .populate('createdBy', 'username email full_name')
+      .populate('paymentRule')
+      .populate('wallet');
    return users;
 };
 

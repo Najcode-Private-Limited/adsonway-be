@@ -3,9 +3,9 @@ const {
    createAgent,
    getAllAdminService,
    getAllAgentService,
-   getAllUsersForSpecificAgentService,
    updateAdminProfileService,
 } = require('../../services/admin');
+const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
 const { asyncHandler } = require('../../utils/async_handler/index');
 
