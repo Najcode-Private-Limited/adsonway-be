@@ -6,6 +6,7 @@ const {
    checkExiststingInstance,
    createUser,
    getUsersCreatedByAgent,
+   updateUser,
 } = require('../../repositories/user');
 
 exports.createUserService = async (agentData, agentId) => {
