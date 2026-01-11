@@ -3,12 +3,13 @@ const {
    getAllTopUpRequests,
    getAllTopUpRequestByUser,
 } = require('../../repositories/top_up_request');
-const { getPureUser } = require('../../repositories/user');
+const { getUserById } = require('../../repositories/user');
+const { getWalletByUserId } = require('../../repositories/wallet');
 
 exports.createNewTopUpRequestService = async (topupData, userId) => {
    const payload = { ...topupData, userId };
 
-   const checkUserExistance = await getPureUser(userId);
+   const checkUserExistance = await getUserById(userId);
    if (!checkUserExistance) {
       return {
          statusCode: 404,
@@ -18,7 +19,16 @@ exports.createNewTopUpRequestService = async (topupData, userId) => {
       };
    }
    payload.status = 'pending';
-   payload.walletId = checkUserExistance.wallet._id;
+   const walletForUser = await getWalletByUserId(userId);
+   if (!walletForUser) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Wallet for user not found',
+         data: null,
+      };
+   }
+   payload.walletId = walletForUser._id;
 
    const newTopUpRequest = await createTopUpRequest(payload);
 
@@ -57,7 +67,7 @@ exports.getAllTopUpRequestsService = async () => {
 };
 
 exports.getAllTopUpRequestsByUserService = async (userId) => {
-   const checkUserExistance = await getPureUser(userId);
+   const checkUserExistance = await getUserById(userId);
    if (!checkUserExistance) {
       return {
          statusCode: 404,
@@ -67,6 +77,7 @@ exports.getAllTopUpRequestsByUserService = async (userId) => {
       };
    }
    const topUpRequests = await getAllTopUpRequestByUser(userId);
+   console.log(topUpRequests);
    if (!topUpRequests) {
       return {
          statusCode: 500,
@@ -75,6 +86,12 @@ exports.getAllTopUpRequestsByUserService = async (userId) => {
          data: null,
       };
    }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'User top-up requests retrieved successfully',
+      data: topUpRequests,
+   };
 };
 
 exports.updateTopUpRequestStatusService = async (requestId, status) => {};

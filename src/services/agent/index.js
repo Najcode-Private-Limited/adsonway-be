@@ -1,7 +1,9 @@
 const { hashPassword } = require('../../functions');
+const user = require('../../models/user');
 const wallet = require('../../models/wallet');
 const {
    createPaymentFeeRule,
+   getPaymentFeeRuleForUser,
 } = require('../../repositories/payment_fee_rules');
 const {
    checkExiststingInstance,
@@ -10,6 +12,10 @@ const {
    updateUser,
    getUserById,
 } = require('../../repositories/user');
+const {
+   getWalletByUserId,
+   createWallet,
+} = require('../../repositories/wallet');
 
 exports.createUserService = async (agentData, agentId) => {
    const checkIfUserExists = await checkExiststingInstance(
@@ -73,13 +79,12 @@ exports.createUserService = async (agentData, agentId) => {
       };
    }
 
-   // Creeate a new wallet associated with the user
    const walletPayload = {
       userId: newUser._id,
       balance: 0,
    };
 
-   const newWalletForUser = await wallet.create(walletPayload);
+   const newWalletForUser = await createWallet(walletPayload);
    if (!newWalletForUser) {
       return {
          statusCode: 500,
@@ -102,6 +107,7 @@ exports.createUserService = async (agentData, agentId) => {
 
 exports.getAllUsersForSpecificAgentService = async (agentId) => {
    const users = await getUsersCreatedByAgent(agentId);
+
    if (!users) {
       return {
          statusCode: 500,
@@ -110,11 +116,27 @@ exports.getAllUsersForSpecificAgentService = async (agentId) => {
          data: null,
       };
    }
+
+   const usersWithDetails = await Promise.all(
+      users.map(async (user) => {
+         const [wallet, paymentRule] = await Promise.all([
+            getWalletByUserId(user._id),
+            getPaymentFeeRuleForUser(user._id),
+         ]);
+
+         return {
+            ...(user.toObject?.() || user),
+            wallet: wallet || null,
+            paymentRule: paymentRule || null,
+         };
+      })
+   );
+
    return {
       statusCode: 200,
       success: true,
       message: 'Users retrieved successfully for the specified agent',
-      data: users,
+      data: usersWithDetails,
    };
 };
 

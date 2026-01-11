@@ -1,5 +1,10 @@
 const ObjectId = require('mongoose').Types.ObjectId;
-const { getAllTopUpRequestsService } = require('../../services/top_up_request');
+const {
+   getAllTopUpRequestsService,
+   getAllTopUpRequestsByUserService,
+   createNewTopUpRequestService,
+} = require('../../services/top_up_request');
+const ApiResponse = require('../../utils/api_response');
 const { asyncHandler } = require('../../utils/async_handler');
 
 exports.handleCreateNewTopUpRequest = asyncHandler(async (req, res) => {
@@ -11,7 +16,7 @@ exports.handleCreateNewTopUpRequest = asyncHandler(async (req, res) => {
          .json(new ApiResponse(400, null, 'All fields are required', false));
    }
 
-   if (!ObjectId.isValid(id)) {
+   if (!ObjectId.isValid(userId)) {
       return res
          .status(400)
          .json(new ApiResponse(400, null, 'Invalid ID format'));

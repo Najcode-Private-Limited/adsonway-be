@@ -56,18 +56,8 @@ const checkExiststingInstance = async (username, email) => {
 const getUsersCreatedByAgent = async (agentId) => {
    const users = await User.find({ createdBy: agentId, role: 'user' })
       .select('-password')
-      .populate('createdBy', 'username email full_name')
-      .populate('paymentRule')
-      .populate('wallet');
-   return users;
-};
-
-const getPureUser = async (id) => {
-   const user = await User.findById(id)
-      .populate('paymentRule')
-      .populate('wallet')
       .populate('createdBy', 'username email full_name');
-   return user;
+   return users;
 };
 
 module.exports = {
@@ -80,5 +70,4 @@ module.exports = {
    checkExiststingInstance,
    getUsersByRole,
    getUsersCreatedByAgent,
-   getPureUser,
 };
