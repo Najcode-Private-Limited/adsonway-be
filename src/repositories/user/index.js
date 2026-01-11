@@ -62,6 +62,14 @@ const getUsersCreatedByAgent = async (agentId) => {
    return users;
 };
 
+const getPureUser = async (id) => {
+   const user = await User.findById(id)
+      .populate('paymentRule')
+      .populate('wallet')
+      .populate('createdBy', 'username email full_name');
+   return user;
+};
+
 module.exports = {
    createUser,
    getUserById,
@@ -72,4 +80,5 @@ module.exports = {
    checkExiststingInstance,
    getUsersByRole,
    getUsersCreatedByAgent,
+   getPureUser,
 };

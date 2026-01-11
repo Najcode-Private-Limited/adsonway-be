@@ -1,4 +1,5 @@
 const { hashPassword } = require('../../functions');
+const wallet = require('../../models/wallet');
 const {
    createPaymentFeeRule,
 } = require('../../repositories/payment_fee_rules');
@@ -68,6 +69,22 @@ exports.createUserService = async (agentData, agentId) => {
          statusCode: 500,
          success: false,
          message: 'Failed to create payment fee rule for user',
+         data: null,
+      };
+   }
+
+   // Creeate a new wallet associated with the user
+   const walletPayload = {
+      userId: newUser._id,
+      balance: 0,
+   };
+
+   const newWalletForUser = await wallet.create(walletPayload);
+   if (!newWalletForUser) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to create wallet for user',
          data: null,
       };
    }

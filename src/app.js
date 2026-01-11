@@ -25,6 +25,7 @@ app.use('/api/agent', agentRoutes);
 app.use('/api/payment-method', require('./routes/payment_method'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/user', require('./routes/user'));
+app.use('/api/top-up-request', require('./routes/top_up_request'));
 
 /* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {
