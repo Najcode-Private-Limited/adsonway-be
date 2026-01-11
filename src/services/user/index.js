@@ -1,5 +1,6 @@
 const { hashPassword } = require('../../functions');
 const { getUserById, updateUser } = require('../../repositories/user');
+const { getWalletByUserId } = require('../../repositories/wallet');
 
 exports.updateUserProfileService = async (userId, updateData) => {
    const checkUserExistance = await getUserById(userId);
@@ -47,5 +48,35 @@ exports.updateUserProfileService = async (userId, updateData) => {
       success: true,
       message: 'User profile updated successfully',
       data: updatedUser,
+   };
+};
+
+exports.getUserWalletService = async (userId) => {
+   const checkUserExistance = await getUserById(userId);
+
+   if (!checkUserExistance) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'User not found',
+         data: null,
+      };
+   }
+
+   const wallet = await getWalletByUserId(userId);
+
+   if (!wallet) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve wallet',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Wallet retrieved successfully',
+      data: wallet,
    };
 };

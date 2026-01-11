@@ -44,3 +44,20 @@
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /api/user/get-my-wallet:
+ *   get:
+ *     summary: Get my wallet
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Wallet fetched successfully
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Wallet not found
+ */
