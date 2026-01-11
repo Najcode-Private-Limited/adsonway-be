@@ -1,10 +1,14 @@
+const { default: mongoose } = require('mongoose');
+const app = require('../../app');
 const {
    createTopUpRequest,
    getAllTopUpRequests,
    getAllTopUpRequestByUser,
+   getTopUpRequestById,
 } = require('../../repositories/top_up_request');
 const { getUserById } = require('../../repositories/user');
 const { getWalletByUserId } = require('../../repositories/wallet');
+const { createNewWalletLedger } = require('../../repositories/wallet_ledger');
 
 exports.createNewTopUpRequestService = async (topupData, userId) => {
    const payload = { ...topupData, userId };
@@ -94,4 +98,119 @@ exports.getAllTopUpRequestsByUserService = async (userId) => {
    };
 };
 
-exports.updateTopUpRequestStatusService = async (requestId, status) => {};
+exports.updateTopUpRequestStatusService = async (
+   requestId,
+   status,
+   rejectReason = null,
+   adminId
+) => {
+   const session = await mongoose.startSession();
+   const topUpRequest = await getTopUpRequestById(requestId);
+   if (!topUpRequest) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Top-up request not found',
+         data: null,
+      };
+   }
+   if (topUpRequest.status === status) {
+      return {
+         statusCode: 400,
+         success: false,
+         message: `Top-up request is already ${status}`,
+         data: null,
+      };
+   }
+   if (
+      (status === 'approved' || status === 'rejected') &&
+      status === 'pending'
+   ) {
+      return {
+         statusCode: 400,
+         success: false,
+         message: `Cannot change status from pending to ${status}`,
+         data: null,
+      };
+   }
+
+   // Two case: 1, if status is reject:
+   if (status === 'rejected') {
+      topUpRequest.status = 'rejected';
+      if (rejectReason) {
+         topUpRequest.rejectReason = rejectReason;
+      }
+      topUpRequest.rejectedAt = new Date();
+      await topUpRequest.save();
+
+      return {
+         statusCode: 200,
+         success: true,
+         message: 'Top-up request rejected successfully',
+         data: topUpRequest,
+      };
+   }
+
+   // Case 2: status is approved
+   if (status === 'approved') {
+      session.startTransaction();
+      const userWallet = await getWalletByUserId(topUpRequest.userId);
+
+      if (!userWallet) {
+         await session.abortTransaction();
+         return {
+            statusCode: 404,
+            success: false,
+            message: 'Wallet for user not found',
+            data: null,
+         };
+      }
+
+      topUpRequest.status = 'approved';
+      topUpRequest.approvedAt = new Date();
+      await topUpRequest.save({ session });
+
+      // If Top-up request is approved, we need to add the amount to the user's wallet and aslo create a wallet ledger entry
+
+      const payload = {
+         userId: topUpRequest.userId,
+         walletId: topUpRequest.walletId,
+         type: 'credit',
+         amount: topUpRequest.amount,
+         status: 'completed',
+         description: `Top-up approved for amount ${topUpRequest.amount}`,
+         balanceBefore: userWallet.amount,
+         balanceAfter: userWallet.amount + topUpRequest.amount,
+         approvedAt: new Date(),
+         meta: {
+            adminId: adminId,
+         },
+      };
+
+      const createNewLedgerEntry = await createNewWalletLedger(
+         payload,
+         session
+      );
+      if (!createNewLedgerEntry) {
+         await session.abortTransaction();
+         return {
+            statusCode: 500,
+            success: false,
+            message: 'Failed to create wallet ledger entry',
+            data: null,
+         };
+      }
+      //   Update the user's wallet balance
+      userWallet.amount += topUpRequest.amount;
+      await userWallet.save({ session });
+
+      await session.commitTransaction();
+      await session.endSession();
+      return {
+         statusCode: 200,
+         success: true,
+         message: 'Top-up request approved successfully',
+         data: topUpRequest,
+      };
+   }
+};

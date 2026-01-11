@@ -121,3 +121,74 @@
  *       404:
  *         description: User not found
  */
+
+/**
+ * @swagger
+ * /api/top-up-request/update-top-up-request-status/{id}:
+ *   patch:
+ *     summary: Update top-up request status
+ *     description: Allows an admin to update the status of a top-up request. Status can be pending, approved, or rejected. A rejectReason is required when status is rejected.
+ *     tags:
+ *       - Wallet Top-Up
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Top-up request ID
+ *         schema:
+ *           type: string
+ *           example: 65a7c1f5e9b1a12f3c4d5678
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, approved, rejected]
+ *                 example: approved
+ *               rejectReason:
+ *                 type: string
+ *                 example: Payment proof is invalid
+ *     responses:
+ *       200:
+ *         description: Top-up request status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Top-up request status updated successfully
+ *                 data:
+ *                   type: object
+ *       400:
+ *         description: Invalid request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid Top-Up Request ID format
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Admin access required
+ *       500:
+ *         description: Internal server error
+ */

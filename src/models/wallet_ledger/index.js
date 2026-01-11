@@ -26,11 +26,6 @@ const walletLedgerSchema = new mongoose.Schema(
          enum: ['pending', 'completed', 'failed'],
          default: 'pending',
       },
-      source: {
-         type: String,
-         enum: ['user', 'admin', 'system'],
-         required: true,
-      },
       description: {
          type: String,
          default: '',
@@ -61,4 +56,6 @@ const walletLedgerSchema = new mongoose.Schema(
 );
 
 walletLedgerSchema.index({ userId: 1, createdAt: -1 });
-module.exports = mongoose.model('WalletLedger', walletLedgerSchema);
+const WalletLedger = mongoose.model('WalletLedger', walletLedgerSchema);
+
+module.exports = WalletLedger;

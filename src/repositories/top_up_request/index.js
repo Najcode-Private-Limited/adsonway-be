@@ -23,3 +23,8 @@ exports.updateTopUpRequestStatus = async (id, status) => {
    );
    return updatedTopUpRequest;
 };
+
+exports.getTopUpRequestById = async (id) => {
+   const topUpRequest = await WalletTopupRequest.findById(id);
+   return topUpRequest;
+};

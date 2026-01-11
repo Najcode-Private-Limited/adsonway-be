@@ -1,4 +1,5 @@
 const { mongoose } = require('mongoose');
+const app = require('../../app');
 
 const walletTopupRequestSchema = new mongoose.Schema(
    {
@@ -41,6 +42,14 @@ const walletTopupRequestSchema = new mongoose.Schema(
          type: mongoose.Schema.Types.ObjectId,
          ref: 'PaymentMethod',
          required: true,
+      },
+      approvedAt: {
+         type: Date,
+         default: null,
+      },
+      rejectedAt: {
+         type: Date,
+         default: null,
       },
    },
    { timestamps: true }
