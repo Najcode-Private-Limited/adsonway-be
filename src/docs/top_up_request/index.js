@@ -124,7 +124,7 @@
 
 /**
  * @swagger
- * /api/top-up-request/update-top-up-request-status/{id}:
+ * /api/top-up-request/api/top-up-request/update-top-up-request-status/{id}:
  *   patch:
  *     summary: Update top-up request status
  *     description: Allows an admin to update the status of a top-up request. Status can be pending, approved, or rejected. A rejectReason is required when status is rejected.
@@ -189,6 +189,49 @@
  *         description: Unauthorized
  *       403:
  *         description: Forbidden - Admin access required
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /get-top-up-requests/{id}:
+ *   get:
+ *     summary: Get top-up request by ID
+ *     description: Fetch a single top-up request using the top-up request ID.
+ *     tags:
+ *       - Wallet Top-Up
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Top-up request ID
+ *     responses:
+ *       200:
+ *         description: Top-up request fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Top-up request fetched successfully
+ *                 data:
+ *                   type: object
+ *       400:
+ *         description: Invalid top-up request ID
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Top-up request not found
  *       500:
  *         description: Internal server error
  */

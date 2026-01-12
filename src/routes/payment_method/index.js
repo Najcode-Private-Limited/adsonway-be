@@ -6,10 +6,10 @@ const {
    handleUpdatePaymentMethod,
    handleDeletePaymentMethod,
 } = require('../../controllers/payment_method');
-const { isAdmin } = require('../../middlewares/auth');
+const { isAdmin, generalAuthenticate } = require('../../middlewares/auth');
 const router = express.Router();
 
-router.route('/get-all').get(isAdmin, handleGetAllPaymentMethod);
+router.route('/get-all').get(generalAuthenticate, handleGetAllPaymentMethod);
 router
    .route('/get-single-method/:id')
    .get(isAdmin, handleGetSinglePaymentMethod);
