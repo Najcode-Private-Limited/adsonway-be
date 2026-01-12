@@ -9,6 +9,7 @@ const {
    handleGetAllTopUpRequests,
    handleGetAllTopUpRequestsByUser,
    handleUpdateTopUpRequestStatus,
+   handleGetTopRequestById,
 } = require('../../controllers/top_up_request');
 const router = express.Router();
 
@@ -21,5 +22,9 @@ router
 router
    .route('/update-top-up-request-status/:id')
    .patch(isAdmin, handleUpdateTopUpRequestStatus);
+
+router
+   .route('/get-top-up-requests/:id')
+   .get(generalAuthenticate, handleGetTopRequestById);
 
 module.exports = router;

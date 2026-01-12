@@ -5,6 +5,7 @@ const {
    getAllTopUpRequests,
    getAllTopUpRequestByUser,
    getTopUpRequestById,
+   getTopUpRequestByTransactionId,
 } = require('../../repositories/top_up_request');
 const { getUserById } = require('../../repositories/user');
 const { getWalletByUserId } = require('../../repositories/wallet');
@@ -19,6 +20,19 @@ exports.createNewTopUpRequestService = async (topupData, userId) => {
          statusCode: 404,
          success: false,
          message: 'User not found',
+         data: null,
+      };
+   }
+
+   const checkIfTransactionIdExists = await getTopUpRequestByTransactionId(
+      topupData.transcationId
+   );
+
+   if (checkIfTransactionIdExists !== null) {
+      return {
+         statusCode: 400,
+         success: false,
+         message: 'Transaction ID already exists',
          data: null,
       };
    }
@@ -154,7 +168,7 @@ exports.updateTopUpRequestStatusService = async (
    // Case 2: status is approved
    if (status === 'approved') {
       session.startTransaction();
-      const userWallet = await getWalletByUserId(topUpRequest.userId);
+      const userWallet = await getWalletByUserId(topUpRequest.userId._id);
 
       if (!userWallet) {
          await session.abortTransaction();
@@ -173,8 +187,8 @@ exports.updateTopUpRequestStatusService = async (
       // If Top-up request is approved, we need to add the amount to the user's wallet and aslo create a wallet ledger entry
 
       const payload = {
-         userId: topUpRequest.userId,
-         walletId: topUpRequest.walletId,
+         userId: topUpRequest.userId._id,
+         walletId: topUpRequest.walletId._id,
          type: 'credit',
          amount: topUpRequest.amount,
          status: 'completed',
@@ -213,4 +227,22 @@ exports.updateTopUpRequestStatusService = async (
          data: topUpRequest,
       };
    }
+};
+
+exports.getTopUpRequestByIdService = async (requestId) => {
+   const topUpRequest = await getTopUpRequestById(requestId);
+   if (!topUpRequest) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Top-up request not found',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Top-up request retrieved successfully',
+      data: topUpRequest,
+   };
 };

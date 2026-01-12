@@ -16,7 +16,7 @@
  *             required:
  *               - amount
  *               - transcationId
- *               - paymentMedthodId
+ *               - paymentMethodId
  *             properties:
  *               amount:
  *                 type: number
@@ -30,7 +30,7 @@
  *               remarks:
  *                 type: string
  *                 example: UPI payment
- *               paymentMedthodId:
+ *               paymentMethodId:
  *                 type: string
  *                 example: 65f1b2c8e4b0a3a12c999999
  *     responses:
@@ -80,7 +80,7 @@
  *                     type: string
  *                   rejectReason:
  *                     type: string
- *                   paymentMedthodId:
+ *                   paymentMethodId:
  *                     type: string
  *                   createdAt:
  *                     type: string
@@ -195,7 +195,7 @@
 
 /**
  * @swagger
- * /get-top-up-requests/{id}:
+ * /api/top-up-request/get-top-up-requests/{id}:
  *   get:
  *     summary: Get top-up request by ID
  *     description: Fetch a single top-up request using the top-up request ID.

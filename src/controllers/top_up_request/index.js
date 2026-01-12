@@ -4,14 +4,15 @@ const {
    getAllTopUpRequestsByUserService,
    createNewTopUpRequestService,
    updateTopUpRequestStatusService,
+   getTopUpRequestByIdService,
 } = require('../../services/top_up_request');
 const ApiResponse = require('../../utils/api_response');
 const { asyncHandler } = require('../../utils/async_handler');
 
 exports.handleCreateNewTopUpRequest = asyncHandler(async (req, res) => {
    const userId = req.user._id;
-   const { amount, transcationId, screenshotUrl, paymentMedthodId } = req.body;
-   if (!amount || !transcationId || !paymentMedthodId || !screenshotUrl) {
+   const { amount, transcationId, screenshotUrl, paymentMethodId } = req.body;
+   if (!amount || !transcationId || !paymentMethodId || !screenshotUrl) {
       return res
          .status(400)
          .json(new ApiResponse(400, null, 'All fields are required', false));
@@ -134,6 +135,33 @@ exports.handleUpdateTopUpRequestStatus = asyncHandler(async (req, res) => {
             200,
             result.data,
             'Top-up request status updated successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetTopRequestById = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+
+   if (!ObjectId.isValid(id)) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, 'Invalid Top-Up Request ID format'));
+   }
+
+   const result = await getTopUpRequestByIdService(id);
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Top-up request retrieved successfully',
             true
          )
       );

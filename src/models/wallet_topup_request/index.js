@@ -38,7 +38,7 @@ const walletTopupRequestSchema = new mongoose.Schema(
          type: String,
          default: null,
       },
-      paymentMedthodId: {
+      paymentMethodId: {
          type: mongoose.Schema.Types.ObjectId,
          ref: 'PaymentMethod',
          required: true,
