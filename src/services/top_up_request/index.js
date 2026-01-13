@@ -136,14 +136,11 @@ exports.updateTopUpRequestStatusService = async (
          data: null,
       };
    }
-   if (
-      (status === 'approved' || status === 'rejected') &&
-      status === 'pending'
-   ) {
+   if (status !== 'pending' && topUpRequest.status !== 'pending') {
       return {
          statusCode: 400,
          success: false,
-         message: `Cannot change status from pending to ${status}`,
+         message: `Top-up request can only be updated from pending to approved or rejected`,
          data: null,
       };
    }
