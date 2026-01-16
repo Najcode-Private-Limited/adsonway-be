@@ -4,6 +4,7 @@ const {
    getAllAdminService,
    getAllAgentService,
    updateAdminProfileService,
+   getAllGoogleAdApplicationsService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
@@ -137,6 +138,31 @@ exports.handleUpdateAdminProfile = asyncHandler(async (req, res) => {
             200,
             updatedAdmin.data,
             'Admin profile updated successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllGoogleAdApplications = asyncHandler(async (req, res) => {
+   const filters = req.query;
+   const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      sort: req.query.sort || '-1',
+   };
+   const result = await getAllGoogleAdApplicationsService(filters, options);
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Google Ad applications retrieved successfully',
             true
          )
       );

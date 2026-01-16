@@ -7,6 +7,9 @@ const {
    checkExiststingInstance,
    createUser,
 } = require('../../repositories/user');
+const {
+   getAllGoogleAdApplications,
+} = require('../../repositories/google_application');
 
 exports.createAdmin = async (adminData) => {
    const checkIfAdminExists = await checkExiststingInstance(
@@ -174,5 +177,41 @@ exports.updateAdminProfileService = async (adminId, updateData) => {
       success: true,
       message: 'Admin profile updated successfully',
       data: updatedAdmin,
+   };
+};
+
+exports.getAllGoogleAdApplicationsService = async (filters, options) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const applications = await getAllGoogleAdApplications(query, options);
+   if (!applications) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Google Ad applications',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Google Ad applications retrieved successfully',
+      data: {
+         applications,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(applications.length / options.limit),
+      },
    };
 };

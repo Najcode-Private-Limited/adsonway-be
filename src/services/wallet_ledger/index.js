@@ -6,7 +6,6 @@ const {
 } = require('../../repositories/wallet_ledger');
 
 exports.getAllTransactionService = async (filters, options) => {
-   console.log('Filters received in getAllTransactionService:', filters);
    const query = {};
    if (filters.status) {
       query.status = filters.status;

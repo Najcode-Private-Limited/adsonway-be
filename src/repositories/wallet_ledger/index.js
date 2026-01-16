@@ -41,8 +41,6 @@ exports.getWalletLedgerByUser = async (userId, query, options) => {
 };
 
 exports.getWalletLedgerAssociatedToAgent = async (userIds, query, options) => {
-   console.log('User IDs in getWalletLedgerAssociatedToAgent:', userIds);
-   console.log('Query in getWalletLedgerAssociatedToAgent:', query);
    const ledgers = await WalletLedger.find({
       userId: { $in: userIds },
       ...query,

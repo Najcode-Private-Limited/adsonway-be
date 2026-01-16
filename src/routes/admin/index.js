@@ -6,6 +6,7 @@ const {
    handleGetAllAgents,
    handleGetAllUsersForSpecificAgent,
    handleUpdateAdminProfile,
+   handleGetAllGoogleAdApplications,
 } = require('../../controllers/admin');
 const { isAdmin } = require('../../middlewares/auth');
 const router = express.Router();
@@ -16,5 +17,8 @@ router.route('/get-admins').get(isAdmin, handleGetAllAdmins);
 router.route('/get-agents').get(isAdmin, handleGetAllAgents);
 router.route('/get-users/:id').get(isAdmin, handleGetAllUsersForSpecificAgent);
 router.route('/update-profile').patch(isAdmin, handleUpdateAdminProfile);
+router
+   .route('/get-all-google-ad-applications')
+   .get(isAdmin, handleGetAllGoogleAdApplications);
 
 module.exports = router;

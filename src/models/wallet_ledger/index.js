@@ -24,7 +24,7 @@ const walletLedgerSchema = new mongoose.Schema(
       status: {
          type: String,
          enum: ['pending', 'completed', 'failed'],
-         default: 'pending',
+         default: 'completed',
       },
       description: {
          type: String,
