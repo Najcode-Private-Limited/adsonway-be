@@ -199,3 +199,52 @@
  *       500:
  *         description: Internal server error
  */
+
+/**
+ * @swagger
+ * /api/admin/update-google-ad-application-status/{id}:
+ *   patch:
+ *     summary: Update Google Ad application status
+ *     description: Allows an admin to update the status of a Google Ad application and optionally add an admin note.
+ *     tags: [Google Ad Application]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Google Ad application ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, approved, rejected]
+ *                 example: approved
+ *               admin_note:
+ *                 type: string
+ *                 example: Approved after verification
+ *     responses:
+ *       200:
+ *         description: Google Ad application status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Invalid request or status update failed
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Access denied (Admin only)
+ *       500:
+ *         description: Internal server error
+ */

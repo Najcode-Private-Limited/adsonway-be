@@ -20,18 +20,18 @@ exports.getGoogleAdApplicationByUser = async (userId, query, options) => {
    return application;
 };
 
-exports.updateGoogleAdApplication = async (userId, updateData) => {
+exports.updateGoogleAdApplication = async (applicationId, payload) => {
    const updatedApplication = await GoogleAdApplication.findOneAndUpdate(
-      { user: userId },
-      updateData,
+      { _id: applicationId },
+      { status: payload.status, adminNote: payload.adminNote || '' },
       { new: true }
    );
    return updatedApplication;
 };
 
-exports.deleteGoogleAdApplication = async (userId) => {
+exports.deleteGoogleAdApplication = async (applicationId) => {
    const deletedApplication = await GoogleAdApplication.findOneAndDelete({
-      user: userId,
+      _id: applicationId,
    });
    return deletedApplication;
 };

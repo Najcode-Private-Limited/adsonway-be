@@ -1,4 +1,7 @@
 const {
+   updateGoogleAdApplication,
+} = require('../../repositories/google_application');
+const {
    createAdmin,
    createAgent,
    getAllAdminService,
@@ -167,3 +170,34 @@ exports.handleGetAllGoogleAdApplications = asyncHandler(async (req, res) => {
          )
       );
 });
+
+exports.handleUpdateGoogleAdApplicationStatus = asyncHandler(
+   async (req, res) => {
+      const { id } = req.params;
+      const { status } = req.body;
+      const adminNote = req.body.admin_note || '';
+      const result = await updateGoogleAdApplication(id, { status, adminNote });
+      if (!result) {
+         return res
+            .status(400)
+            .json(
+               new ApiResponse(
+                  400,
+                  null,
+                  'Failed to update application status',
+                  false
+               )
+            );
+      }
+      return res
+         .status(200)
+         .json(
+            new ApiResponse(
+               200,
+               result,
+               'Google Ad application status updated successfully',
+               true
+            )
+         );
+   }
+);
