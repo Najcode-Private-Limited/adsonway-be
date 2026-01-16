@@ -27,6 +27,10 @@ app.use('/api/upload', require('./routes/upload'));
 app.use('/api/user', require('./routes/user'));
 app.use('/api/top-up-request', require('./routes/top_up_request'));
 app.use('/api/wallet-ledger', require('./routes/waller_ledger'));
+app.use(
+   '/api/facebook-application-setting',
+   require('./routes/facebook_application_setting')
+);
 
 /* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {
