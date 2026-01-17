@@ -7,6 +7,9 @@ const {
 } = require('../../repositories/google_application');
 const { getUserById, updateUser } = require('../../repositories/user');
 const { getWalletByUserId } = require('../../repositories/wallet');
+const {
+   getPaymentFeeRuleForUser,
+} = require('../../repositories/payment_fee_rules');
 
 exports.updateUserProfileService = async (userId, updateData) => {
    const checkUserExistance = await getUserById(userId);
@@ -69,6 +72,16 @@ exports.getUserWalletService = async (userId) => {
       };
    }
 
+   const rule = await getPaymentFeeRuleForUser(userId);
+   if (!rule) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve payment fee rule',
+         data: null,
+      };
+   }
+
    const wallet = await getWalletByUserId(userId);
 
    if (!wallet) {
@@ -83,7 +96,10 @@ exports.getUserWalletService = async (userId) => {
       statusCode: 200,
       success: true,
       message: 'Wallet retrieved successfully',
-      data: wallet,
+      data: {
+         wallet,
+         paymentFeeRule: rule,
+      },
    };
 };
 
