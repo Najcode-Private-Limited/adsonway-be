@@ -1,4 +1,7 @@
 const {
+   updateFacebookAdApplication,
+} = require('../../repositories/facebook_application');
+const {
    updateGoogleAdApplication,
 } = require('../../repositories/google_application');
 const {
@@ -8,6 +11,7 @@ const {
    getAllAgentService,
    updateAdminProfileService,
    getAllGoogleAdApplicationsService,
+   getAllFacebookAdApplicationsService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
@@ -196,6 +200,65 @@ exports.handleUpdateGoogleAdApplicationStatus = asyncHandler(
                200,
                result,
                'Google Ad application status updated successfully',
+               true
+            )
+         );
+   }
+);
+
+exports.handleGetAllFacebookAdApplications = asyncHandler(async (req, res) => {
+   const filters = req.query;
+   const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      sort: req.query.sort || '-1',
+   };
+   const result = await getAllFacebookAdApplicationsService(filters, options);
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Facebook Ad applications retrieved successfully',
+            true
+         )
+      );
+});
+
+exports.handleUpdateFacebookAdApplicationStatus = asyncHandler(
+   async (req, res) => {
+      const { id } = req.params;
+      const { status } = req.body;
+      const adminNote = req.body.admin_note || '';
+      const result = await updateFacebookAdApplication(id, {
+         status,
+         adminNote,
+      });
+      if (!result) {
+         return res
+            .status(400)
+            .json(
+               new ApiResponse(
+                  400,
+                  null,
+                  'Failed to update application status',
+                  false
+               )
+            );
+      }
+      return res
+         .status(200)
+         .json(
+            new ApiResponse(
+               200,
+               result,
+               'Facebook Ad application status updated successfully',
                true
             )
          );

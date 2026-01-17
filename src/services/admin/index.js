@@ -10,6 +10,9 @@ const {
 const {
    getAllGoogleAdApplications,
 } = require('../../repositories/google_application');
+const {
+   getAllFacebookAdApplications,
+} = require('../../repositories/facebook_application');
 
 exports.createAdmin = async (adminData) => {
    const checkIfAdminExists = await checkExiststingInstance(
@@ -207,6 +210,42 @@ exports.getAllGoogleAdApplicationsService = async (filters, options) => {
       statusCode: 200,
       success: true,
       message: 'Google Ad applications retrieved successfully',
+      data: {
+         applications,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(applications.length / options.limit),
+      },
+   };
+};
+
+exports.getAllFacebookAdApplicationsService = async (filters, options) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const applications = await getAllFacebookAdApplications(query, options);
+   if (!applications) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Facebook Ad applications',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Facebook Ad applications retrieved successfully',
       data: {
          applications,
          page: options.page,

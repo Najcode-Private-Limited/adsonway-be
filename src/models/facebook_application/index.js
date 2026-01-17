@@ -81,13 +81,20 @@ const facebookApplicationSchema = new mongoose.Schema(
          },
       },
 
+      numberOfAccounts: {
+         type: Number,
+         required: true,
+         min: 1,
+         max: 5,
+      },
+
       adAccounts: {
          type: [adAccountSchema],
          validate: {
             validator(value) {
-               return value.length <= 5;
+               return value.length === this.numberOfAccounts;
             },
-            message: 'Maximum 5 ad accounts allowed',
+            message: 'Ad accounts count must match numberOfAccounts',
          },
       },
       remarks: {
