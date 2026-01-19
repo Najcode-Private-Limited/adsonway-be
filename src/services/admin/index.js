@@ -13,9 +13,13 @@ const {
 const {
    getAllFacebookAdApplications,
 } = require('../../repositories/facebook_application');
-const { createNewGoogleAccount } = require('../../repositories/google_account');
+const {
+   createNewGoogleAccount,
+   getAllGoogleAccounts,
+} = require('../../repositories/google_account');
 const {
    createNewFacebookAccount,
+   getAllFacebookAccounts,
 } = require('../../repositories/facebook_account');
 
 exports.createAdmin = async (adminData) => {
@@ -292,5 +296,77 @@ exports.createNewFacebookAdAccountService = async (accountData) => {
       success: true,
       message: 'Facebook Ad account created successfully',
       data: result,
+   };
+};
+
+exports.getAllFacebookAdAccountsService = async (filters, options) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const accounts = await getAllFacebookAccounts(query, options);
+   if (!accounts) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Facebook Ad accounts',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Facebook Ad accounts retrieved successfully',
+      data: {
+         accounts,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(accounts.length / options.limit),
+      },
+   };
+};
+
+exports.getAllGoogleAccountsService = async (filters, options) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const accounts = await getAllGoogleAccounts(query, options);
+   if (!accounts) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Google Ad accounts',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Google Ad accounts retrieved successfully',
+      data: {
+         accounts,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(accounts.length / options.limit),
+      },
    };
 };

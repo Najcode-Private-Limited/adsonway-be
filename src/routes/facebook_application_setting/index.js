@@ -1,12 +1,10 @@
 const express = require('express');
-const { isAdmin } = require('../../middlewares/auth');
+const { isAdmin, generalAuthenticate } = require('../../middlewares/auth');
 const FacebookApplicationSetting = require('../../models/facebook_application_setting');
 const ApiResponse = require('../../utils/api_response');
 const router = express.Router();
 
-router.use(isAdmin);
-
-router.get('/get-setting', async (req, res) => {
+router.get('/get-setting', generalAuthenticate, async (req, res) => {
    const setting = await FacebookApplicationSetting.find({});
    if (!setting || setting.length === 0) {
       return res
@@ -32,7 +30,7 @@ router.get('/get-setting', async (req, res) => {
       );
 });
 
-router.put('/update-setting', async (req, res) => {
+router.put('/update-setting', isAdmin, async (req, res) => {
    const updateData = req.body;
    const setting = await FacebookApplicationSetting.findOneAndUpdate(
       {},
@@ -64,7 +62,7 @@ router.put('/update-setting', async (req, res) => {
       );
 });
 
-router.post('/create-setting', async (req, res) => {
+router.post('/create-setting', isAdmin, async (req, res) => {
    const settingData = req.body;
    const newSetting = await FacebookApplicationSetting.create(settingData);
 

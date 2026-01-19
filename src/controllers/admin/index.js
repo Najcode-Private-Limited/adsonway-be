@@ -15,6 +15,8 @@ const {
    getAllFacebookAdApplicationsService,
    createNewFacebookAdAccountService,
    createNewGoogleAdAccountService,
+   getAllGoogleAccountsService,
+   getAllFacebookAdAccountsService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
@@ -357,6 +359,58 @@ exports.handleCreateNewFacebookAdAccount = asyncHandler(async (req, res) => {
             201,
             result.data,
             'Facebook Ad account created successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllFacebookAdAccounts = asyncHandler(async (req, res) => {
+   const filters = req.query;
+   const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      sort: req.query.sort || '-1',
+   };
+   const result = await getAllFacebookAdAccountsService(filters, options);
+
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Facebook Ad accounts retrieved successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllGoogleAdAccounts = asyncHandler(async (req, res) => {
+   const filters = req.query;
+   const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      sort: req.query.sort || '-1',
+   };
+
+   const result = await getAllGoogleAccountsService(filters, options);
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Google Ad accounts retrieved successfully',
             true
          )
       );
