@@ -1,3 +1,4 @@
+const ObjectId = require('mongoose').Types.ObjectId;
 const {
    updateFacebookAdApplication,
 } = require('../../repositories/facebook_application');
@@ -12,10 +13,13 @@ const {
    updateAdminProfileService,
    getAllGoogleAdApplicationsService,
    getAllFacebookAdApplicationsService,
+   createNewFacebookAdAccountService,
+   createNewGoogleAdAccountService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
 const { asyncHandler } = require('../../utils/async_handler/index');
+const validateRequiredFields = require('../../utils/validate_fields');
 
 exports.handleCreateAdmin = asyncHandler(async (req, res) => {
    const { email, username, password, full_name, role = 'admin' } = req.body;
@@ -264,3 +268,96 @@ exports.handleUpdateFacebookAdApplicationStatus = asyncHandler(
          );
    }
 );
+
+exports.handleCreateNewGoogleAdAccount = asyncHandler(async (req, res) => {
+   const { user } = req.body;
+
+   if (!ObjectId.isValid(user)) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, 'Invalid user ID', false));
+   }
+
+   const requiredFields = [
+      'user',
+      'account_name',
+      'account_id',
+      'timezone',
+      'deposit_amount',
+      'application_fee',
+      'deposit_fee',
+      'promotional_website',
+      'gmail_id',
+   ];
+
+   const validation = validateRequiredFields(req.body, requiredFields);
+
+   if (!validation.isValid) {
+      return res.status(400).json(validation.response);
+   }
+
+   const result = await createNewGoogleAdAccountService(req.body);
+
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+
+   return res
+      .status(201)
+      .json(
+         new ApiResponse(
+            201,
+            result.data,
+            'Google Ad account created successfully',
+            true
+         )
+      );
+});
+
+exports.handleCreateNewFacebookAdAccount = asyncHandler(async (req, res) => {
+   const { user } = req.body;
+
+   if (!ObjectId.isValid(user)) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, 'Invalid user ID', false));
+   }
+
+   const requiredFields = [
+      'user',
+      'license_number',
+      'account_name',
+      'account_id',
+      'timezone',
+      'deposit_amount',
+      'application_fee',
+      'deposit_fee',
+   ];
+
+   const validation = validateRequiredFields(req.body, requiredFields);
+
+   if (!validation.isValid) {
+      return res.status(400).json(validation.response);
+   }
+
+   const result = await createNewFacebookAdAccountService(req.body);
+
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+
+   return res
+      .status(201)
+      .json(
+         new ApiResponse(
+            201,
+            result.data,
+            'Facebook Ad account created successfully',
+            true
+         )
+      );
+});

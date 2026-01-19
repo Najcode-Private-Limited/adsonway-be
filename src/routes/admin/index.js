@@ -10,6 +10,8 @@ const {
    handleUpdateGoogleAdApplicationStatus,
    handleUpdateFacebookAdApplicationStatus,
    handleGetAllFacebookAdApplications,
+   handleCreateNewFacebookAdAccount,
+   handleCreateNewGoogleAdAccount,
 } = require('../../controllers/admin');
 const { isAdmin } = require('../../middlewares/auth');
 const router = express.Router();
@@ -34,5 +36,13 @@ router
 router
    .route('/update-facebook-ad-application-status/:id')
    .patch(isAdmin, handleUpdateFacebookAdApplicationStatus);
+
+router
+   .route('/create-new-facebook-ad-account')
+   .post(isAdmin, handleCreateNewFacebookAdAccount);
+
+router
+   .route('/create-new-google-ad-account')
+   .post(isAdmin, handleCreateNewGoogleAdAccount);
 
 module.exports = router;

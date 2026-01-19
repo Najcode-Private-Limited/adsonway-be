@@ -13,6 +13,10 @@ const {
 const {
    getAllFacebookAdApplications,
 } = require('../../repositories/facebook_application');
+const { createNewGoogleAccount } = require('../../repositories/google_account');
+const {
+   createNewFacebookAccount,
+} = require('../../repositories/facebook_account');
 
 exports.createAdmin = async (adminData) => {
    const checkIfAdminExists = await checkExiststingInstance(
@@ -252,5 +256,41 @@ exports.getAllFacebookAdApplicationsService = async (filters, options) => {
          limit: options.limit,
          totalPages: Math.ceil(applications.length / options.limit),
       },
+   };
+};
+
+exports.createNewGoogleAdAccountService = async (accountData) => {
+   const result = await createNewGoogleAccount(accountData);
+   if (!result) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to create Google Ad account',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 201,
+      success: true,
+      message: 'Google Ad account created successfully',
+      data: result,
+   };
+};
+
+exports.createNewFacebookAdAccountService = async (accountData) => {
+   const result = await createNewFacebookAccount(accountData);
+   if (!result) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to create Facebook Ad account',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 201,
+      success: true,
+      message: 'Facebook Ad account created successfully',
+      data: result,
    };
 };

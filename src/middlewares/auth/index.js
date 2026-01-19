@@ -16,11 +16,7 @@ const isAdmin = async (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      console.log(decoded, '>>>> decoded');
-
       const admin = await user.findById(decoded.userId);
-
-      console.log(admin, '>>>> admin');
 
       if (!admin || admin.role !== 'admin') {
          return res
