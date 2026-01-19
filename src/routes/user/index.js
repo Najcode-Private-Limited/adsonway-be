@@ -7,6 +7,8 @@ const {
    handleGetMyGoogleAdApplications,
    handleApplyFacebookAd,
    handleGetMyFacebookAdApplications,
+   handleGetAllMyFacebookAccounts,
+   handleGetAllMyGoogleAccounts,
 } = require('../../controllers/user');
 const router = express.Router();
 
@@ -20,5 +22,13 @@ router.route('/apply-facebook-ad').post(isUser, handleApplyFacebookAd);
 router
    .route('/get-all-my-facebook-ad-applications')
    .get(isUser, handleGetMyFacebookAdApplications);
+
+router
+   .route('/get-all-my-facebook-accounts')
+   .get(isUser, handleGetAllMyFacebookAccounts);
+
+router
+   .route('/get-all-my-google-accounts')
+   .get(isUser, handleGetAllMyGoogleAccounts);
 
 module.exports = router;

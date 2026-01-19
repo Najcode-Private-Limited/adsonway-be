@@ -8,19 +8,19 @@ exports.createNewGoogleAccount = async (payload) => {
 exports.getGoogleAccountById = async (id) => {
    const response = await GoogleAccount.findById(id).populate({
       path: 'user',
-      select: 'name email',
+      select: 'full_name email username',
    });
    return response;
 };
 
 exports.getAllGoogleAccountForUser = async (userId, query, options) => {
-   const response = await GoogleAccount.find({ userId, ...query })
+   const response = await GoogleAccount.find({ user: userId, ...query })
       .sort({ createdAt: Number(options.sort) || -1 })
       .limit(options.limit)
       .skip((options.page - 1) * options.limit)
       .populate({
          path: 'user',
-         select: 'name email',
+         select: 'full_name email username',
       });
    return response;
 };
@@ -29,7 +29,11 @@ exports.getAllGoogleAccounts = async (query, options) => {
    const response = await GoogleAccount.find(query)
       .sort({ createdAt: Number(options.sort) || -1 })
       .limit(options.limit)
-      .skip((options.page - 1) * options.limit);
+      .skip((options.page - 1) * options.limit)
+      .populate({
+         path: 'user',
+         select: 'full_name email username',
+      });
    return response;
 };
 

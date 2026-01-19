@@ -6,6 +6,8 @@ const {
    getMyGoogleAdApplicationsService,
    applyFacebookAdService,
    getMyFacebookAdApplicationsService,
+   getAllGoogleAccountForUserService,
+   getAllFacebookAccountForUserService,
 } = require('../../services/user');
 const ApiResponse = require('../../utils/api_response');
 const { asyncHandler } = require('../../utils/async_handler');
@@ -213,6 +215,92 @@ exports.handleGetMyFacebookAdApplications = asyncHandler(async (req, res) => {
             200,
             result.data,
             'Facebook Ad applications retrieved successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllMyGoogleAccounts = asyncHandler(async (req, res) => {
+   const userId = req.user._id;
+   const filters = req.query;
+   const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      sort: req.query.sort || '-1',
+   };
+   if (!ObjectId.isValid(userId)) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, 'Invalid User ID format', false));
+   }
+
+   const result = await getAllGoogleAccountForUserService(
+      userId,
+      filters,
+      options
+   );
+   if (!result) {
+      return res
+         .status(400)
+         .json(
+            new ApiResponse(
+               400,
+               null,
+               'Failed to retrieve Google accounts',
+               false
+            )
+         );
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result,
+            'Google accounts retrieved successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllMyFacebookAccounts = asyncHandler(async (req, res) => {
+   const userId = req.user._id;
+   const filters = req.query;
+   const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      sort: req.query.sort || '-1',
+   };
+   if (!ObjectId.isValid(userId)) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, 'Invalid User ID format', false));
+   }
+   const result = await getAllFacebookAccountForUserService(
+      userId,
+      filters,
+      options
+   );
+   if (!result) {
+      return res
+         .status(400)
+         .json(
+            new ApiResponse(
+               400,
+               null,
+               'Failed to retrieve Facebook accounts',
+               false
+            )
+         );
+   }
+
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result,
+            'Facebook accounts retrieved successfully',
             true
          )
       );

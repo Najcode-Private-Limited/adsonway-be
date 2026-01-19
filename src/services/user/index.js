@@ -15,6 +15,12 @@ const {
    createNewFacebookAdApplication,
    getFacebookAdApplicationByUser,
 } = require('../../repositories/facebook_application');
+const {
+   getAllFacebookAccountForUser,
+} = require('../../repositories/facebook_account');
+const {
+   getAllGoogleAccountForUser,
+} = require('../../repositories/google_account');
 
 exports.updateUserProfileService = async (userId, updateData) => {
    const checkUserExistance = await getUserById(userId);
@@ -414,4 +420,86 @@ exports.applyFacebookAdService = async (userId, applicationData) => {
          data: null,
       };
    }
+};
+
+exports.getAllFacebookAccountForUserService = async (
+   userId,
+   filters,
+   options
+) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const accounts = await getAllFacebookAccountForUser(userId, query, options);
+
+   if (!accounts) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Facebook accounts',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Facebook accounts retrieved successfully',
+      data: {
+         accounts,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(accounts.length / options.limit),
+      },
+   };
+};
+
+exports.getAllGoogleAccountForUserService = async (
+   userId,
+   filters,
+   options
+) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const accounts = await getAllGoogleAccountForUser(userId, query, options);
+
+   if (!accounts) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Google accounts',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Google accounts retrieved successfully',
+      data: {
+         accounts,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(accounts.length / options.limit),
+      },
+   };
 };
