@@ -17,6 +17,8 @@ const {
    createNewGoogleAdAccountService,
    getAllGoogleAccountsService,
    getAllFacebookAdAccountsService,
+   updateFacebookAccountService,
+   updateGoogleAccountService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
@@ -411,6 +413,64 @@ exports.handleGetAllGoogleAdAccounts = asyncHandler(async (req, res) => {
             200,
             result.data,
             'Google Ad accounts retrieved successfully',
+            true
+         )
+      );
+});
+
+exports.handleUpdateGoogleAdAccount = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+
+   if (!ObjectId.isValid(id)) {
+      return res
+         .status(400)
+         .json(
+            new ApiResponse(400, null, 'Invalid Google Ad account ID', false)
+         );
+   }
+
+   const result = await updateGoogleAccountService(id, req.body);
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Google Ad account updated successfully',
+            true
+         )
+      );
+});
+
+exports.handleUpdateFacebookAdAccount = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+
+   if (!ObjectId.isValid(id)) {
+      return res
+         .status(400)
+         .json(
+            new ApiResponse(400, null, 'Invalid Facebook Ad account ID', false)
+         );
+   }
+   const result = await updateFacebookAccountService(id, req.body);
+
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Facebook Ad account updated successfully',
             true
          )
       );

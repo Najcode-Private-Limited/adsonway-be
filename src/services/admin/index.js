@@ -16,10 +16,13 @@ const {
 const {
    createNewGoogleAccount,
    getAllGoogleAccounts,
+   getGoogleAccountById,
+   updateGoogleAccountById,
 } = require('../../repositories/google_account');
 const {
    createNewFacebookAccount,
    getAllFacebookAccounts,
+   updateFacebookAccountById,
 } = require('../../repositories/facebook_account');
 
 exports.createAdmin = async (adminData) => {
@@ -368,5 +371,72 @@ exports.getAllGoogleAccountsService = async (filters, options) => {
          limit: options.limit,
          totalPages: Math.ceil(accounts.length / options.limit),
       },
+   };
+};
+
+exports.updateGoogleAccountService = async (accountId, data) => {
+   const checkAccountExistance = await getGoogleAccountById(accountId);
+
+   if (!checkAccountExistance) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Google Ad account not found',
+         data: null,
+      };
+   }
+   const payload = {};
+   if (data.status) payload.status = data.status;
+   if (data.account_name) payload.account_name = data.account_name;
+   if (data.account_id) payload.account_id = data.account_id;
+
+   const result = await updateGoogleAccountById(accountId, payload);
+   if (!result) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to update Google Ad account',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Google Ad account updated successfully',
+      data: result,
+   };
+};
+
+exports.updateFacebookAccountService = async (accountId, data) => {
+   const checkAccountExistance = await getFacebookAccountById(accountId);
+
+   if (!checkAccountExistance) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Facebook Ad account not found',
+         data: null,
+      };
+   }
+
+   const payload = {};
+   if (data.status) payload.status = data.status;
+   if (data.account_name) payload.account_name = data.account_name;
+   if (data.account_id) payload.account_id = data.account_id;
+
+   const result = await updateFacebookAccountById(accountId, payload);
+   if (!result) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to update Facebook Ad account',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Facebook Ad account updated successfully',
+      data: result,
    };
 };

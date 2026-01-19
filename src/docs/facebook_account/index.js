@@ -477,3 +477,111 @@
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /api/admin/update-google-ad-account/{id}:
+ *   patch:
+ *     summary: Admin update Google ad account
+ *     tags:
+ *       - Admin Ad Accounts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Google ad account ID
+ *         example: 65a1f2c9e123456789abcd99
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               account_name:
+ *                 type: string
+ *                 example: Updated Google Ads Account
+ *               account_id:
+ *                 type: string
+ *                 example: ga_111222333
+ *               status:
+ *                 type: string
+ *                 enum: [active, disabled, deactivated]
+ *                 example: active
+ *     responses:
+ *       200:
+ *         description: Google ad account updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               message: Google ad account updated successfully
+ *       400:
+ *         description: Invalid update payload
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Admin access required
+ *       404:
+ *         description: Account not found
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/admin/update-facebook-ad-account/{id}:
+ *   patch:
+ *     summary: Admin update Facebook ad account
+ *     tags:
+ *       - Admin Ad Accounts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Facebook ad account ID
+ *         example: 65a1f2c9e123456789abcd45
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               account_name:
+ *                 type: string
+ *                 example: Updated Facebook Ads Account
+ *               account_id:
+ *                 type: string
+ *                 example: fb_999888777
+ *               status:
+ *                 type: string
+ *                 enum: [active, disabled, deactivated]
+ *                 example: disabled
+ *     responses:
+ *       200:
+ *         description: Facebook ad account updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               message: Facebook ad account updated successfully
+ *       400:
+ *         description: Invalid update payload
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Admin access required
+ *       404:
+ *         description: Account not found
+ *       500:
+ *         description: Server error
+ */
