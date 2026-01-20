@@ -37,14 +37,10 @@ exports.getAllFacebookAccounts = async (query, options) => {
    return response;
 };
 
-exports.updateFacebookAccountById = async (id, status) => {
-   const response = await FacebookAccount.findByIdAndUpdate(
-      id,
-      { status },
-      {
-         new: true,
-      }
-   );
+exports.updateFacebookAccountById = async (id, payload) => {
+   const response = await FacebookAccount.findByIdAndUpdate(id, payload, {
+      new: true,
+   });
    return response;
 };
 

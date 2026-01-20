@@ -24,6 +24,7 @@ const {
    createNewFacebookAccount,
    getAllFacebookAccounts,
    updateFacebookAccountById,
+   getFacebookAccountById,
 } = require('../../repositories/facebook_account');
 const {
    getPaymentFeeRuleForUser,

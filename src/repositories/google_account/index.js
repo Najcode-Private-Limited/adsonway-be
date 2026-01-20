@@ -37,14 +37,10 @@ exports.getAllGoogleAccounts = async (query, options) => {
    return response;
 };
 
-exports.updateGoogleAccountById = async (id, status) => {
-   const response = await GoogleAccount.findByIdAndUpdate(
-      id,
-      { status },
-      {
-         new: true,
-      }
-   );
+exports.updateGoogleAccountById = async (id, payload) => {
+   const response = await GoogleAccount.findByIdAndUpdate(id, payload, {
+      new: true,
+   });
    return response;
 };
 
