@@ -1,3 +1,4 @@
+const user = require('../../models/user/index');
 const User = require('../../models/user/index');
 
 /* ---------------- Create User ---------------- */
@@ -60,6 +61,13 @@ const getUsersCreatedByAgent = async (agentId) => {
    return users;
 };
 
+const getAllUsers = async (query) => {
+   const users = await User.find({ role: 'user', ...query }).select(
+      '-password'
+   );
+   return users;
+};
+
 module.exports = {
    createUser,
    getUserById,
@@ -70,4 +78,5 @@ module.exports = {
    checkExiststingInstance,
    getUsersByRole,
    getUsersCreatedByAgent,
+   getAllUsers,
 };

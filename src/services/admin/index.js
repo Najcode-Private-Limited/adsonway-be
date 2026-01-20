@@ -6,6 +6,7 @@ const {
    getUserById,
    checkExiststingInstance,
    createUser,
+   getAllUsers,
 } = require('../../repositories/user');
 const {
    getAllGoogleAdApplications,
@@ -24,6 +25,10 @@ const {
    getAllFacebookAccounts,
    updateFacebookAccountById,
 } = require('../../repositories/facebook_account');
+const {
+   getPaymentFeeRuleForUser,
+} = require('../../repositories/payment_fee_rules');
+const user = require('../../models/user');
 
 exports.createAdmin = async (adminData) => {
    const checkIfAdminExists = await checkExiststingInstance(
@@ -438,5 +443,43 @@ exports.updateFacebookAccountService = async (accountId, data) => {
       success: true,
       message: 'Facebook Ad account updated successfully',
       data: result,
+   };
+};
+
+exports.getAllUsersService = async (filters) => {
+   const query = {};
+   if (filters.search) {
+      query.$or = [
+         { username: { $regex: filters.search, $options: 'i' } },
+         { email: { $regex: filters.search, $options: 'i' } },
+         { full_name: { $regex: filters.search, $options: 'i' } },
+      ];
+   }
+   const users = await getAllUsers(query);
+
+   if (!users) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve users',
+         data: null,
+      };
+   }
+
+   const usersWithRules = await Promise.all(
+      users.map(async (user) => {
+         const paymentRule = await getPaymentFeeRuleForUser(user._id);
+
+         return {
+            ...(user.toObject?.() ?? user),
+            paymentRule: paymentRule || null,
+         };
+      })
+   );
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Users retrieved successfully',
+      data: usersWithRules,
    };
 };

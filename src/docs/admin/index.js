@@ -289,3 +289,62 @@
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /api/admin/get-all-user:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Get all users (Admin only)
+ *     description: Admin-only API to fetch all users with search support.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Search users by name, email, or phone number
+ *     responses:
+ *       200:
+ *         description: Users fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: "65a9c7e2f8b9a0123abc4567"
+ *                       name:
+ *                         type: string
+ *                         example: "John Doe"
+ *                       email:
+ *                         type: string
+ *                         example: "john@example.com"
+ *                       phone:
+ *                         type: string
+ *                         example: "9876543210"
+ *                       status:
+ *                         type: string
+ *                         example: "active"
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *       401:
+ *         description: Unauthorized – Admin token missing or invalid
+ *       403:
+ *         description: Forbidden – Not an admin
+ *       500:
+ *         description: Internal server error
+ */

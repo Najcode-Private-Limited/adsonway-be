@@ -19,6 +19,7 @@ const {
    getAllFacebookAdAccountsService,
    updateFacebookAccountService,
    updateGoogleAccountService,
+   getAllUsersService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
@@ -473,5 +474,20 @@ exports.handleUpdateFacebookAdAccount = asyncHandler(async (req, res) => {
             'Facebook Ad account updated successfully',
             true
          )
+      );
+});
+
+exports.handleGetAllUser = asyncHandler(async (req, res) => {
+   const filters = req.query;
+   const result = await getAllUsersService(filters);
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(200, result.data, 'Users retrieved successfully', true)
       );
 });
