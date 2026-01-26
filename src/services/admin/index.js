@@ -32,10 +32,19 @@ const {
 const user = require('../../models/user');
 const {
    getRequestTopupGoogleIds,
+   updateRequestTopupGoogleIdById,
+   getRequestTopupGoogleIdById,
 } = require('../../repositories/request_topoup_google_id');
 const {
    getRequestTopupFacebookIds,
+   updateRequestTopupFacebookIdById,
+   getRequestTopupFacebookIdById,
 } = require('../../repositories/request_topup_facebook_id');
+const {
+   getWalletById,
+   getWalletByUserId,
+} = require('../../repositories/wallet');
+const WalletLedger = require('../../models/wallet_ledger');
 
 exports.createAdmin = async (adminData) => {
    const checkIfAdminExists = await checkExiststingInstance(
@@ -562,5 +571,177 @@ exports.getAllRequestTopupFacebookIdAdminService = async (filters, options) => {
          limit: options.limit,
          totalPages: Math.ceil(requests.length / options.limit),
       },
+   };
+};
+
+exports.updateGoogleAdAccountDepositService = async (
+   accountId,
+   depositData
+) => {
+   const checkApplicationExistabnce =
+      await getRequestTopupGoogleIdById(accountId);
+
+   if (!checkApplicationExistabnce) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Google Ad account deposit request not found',
+         data: null,
+      };
+   }
+
+   if (
+      checkApplicationExistabnce.status === 'approved' ||
+      checkApplicationExistabnce.status === 'rejected'
+   ) {
+      return {
+         statusCode: 400,
+         success: false,
+         message:
+            'Cannot update a deposit request that has already been processed',
+         data: null,
+      };
+   }
+   const newUpdatedAccount = await updateRequestTopupGoogleIdById(
+      accountId,
+      depositData
+   );
+   if (depositData.status === 'approved') {
+      depositData.approvedAt = new Date();
+   }
+   if (depositData.status === 'rejected') {
+      depositData.rejectedAt = new Date();
+   }
+   if (!newUpdatedAccount) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to update Google Ad account deposit',
+         data: null,
+      };
+   }
+
+   if (depositData.status === 'rejected') {
+      const walletId = newUpdatedAccount.walletId;
+      const refundAmount = newUpdatedAccount.amount;
+
+      const userWallet = await getWalletByUserId(newUpdatedAccount.userId);
+      const paymentRule = await getPaymentFeeRuleForUser(
+         newUpdatedAccount.userId
+      );
+
+      const refundMoneyPercentage = paymentRule.google_commission;
+      const totalRefundAmount =
+         refundAmount + (refundMoneyPercentage / 100) * refundAmount;
+
+      if (userWallet) {
+         userWallet.amount += totalRefundAmount;
+         await userWallet.save();
+      }
+
+      await WalletLedger.create({
+         walletId: userWallet._id,
+         userId: newUpdatedAccount.userId,
+         type: 'refund',
+         amount: totalRefundAmount,
+         status: 'completed',
+         description: `Refund for rejected Google Ad account top-up request ID: ${accountId}`,
+         balanceBefore: userWallet.amount - totalRefundAmount,
+         balanceAfter: userWallet.amount,
+      });
+   }
+
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Google Ad account deposit updated successfully',
+      data: newUpdatedAccount,
+   };
+};
+
+exports.updateFacebookAdAccountDepositService = async (
+   accountId,
+   depositData
+) => {
+   const checkApplicationExistabnce =
+      await getRequestTopupFacebookIdById(accountId);
+
+   if (!checkApplicationExistabnce) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Facebook Ad account deposit request not found',
+         data: null,
+      };
+   }
+
+   if (
+      checkApplicationExistabnce.status === 'approved' ||
+      checkApplicationExistabnce.status === 'rejected'
+   ) {
+      return {
+         statusCode: 400,
+         success: false,
+         message:
+            'Cannot update a deposit request that has already been processed',
+         data: null,
+      };
+   }
+   if (depositData.status === 'approved') {
+      depositData.approvedAt = new Date();
+   }
+   if (depositData.status === 'rejected') {
+      depositData.rejectedAt = new Date();
+   }
+   const newUpdatedAccount = await updateRequestTopupFacebookIdById(
+      accountId,
+      depositData
+   );
+   if (!newUpdatedAccount) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to update Facebook Ad account deposit',
+         data: null,
+      };
+   }
+
+   if (depositData.status === 'rejected') {
+      const refundAmount = newUpdatedAccount.amount;
+
+      const userWallet = await getWalletByUserId(newUpdatedAccount.userId);
+      const paymentRule = await getPaymentFeeRuleForUser(
+         newUpdatedAccount.userId
+      );
+
+      const refundMoneyPercentage = paymentRule.facebook_commission;
+      const totalRefundAmount =
+         refundAmount + (refundMoneyPercentage / 100) * refundAmount;
+
+      if (userWallet) {
+         userWallet.amount += totalRefundAmount;
+         await userWallet.save();
+      }
+
+      const walletLedgerEntry = {
+         walletId: userWallet._id,
+         userId: newUpdatedAccount.userId,
+         type: 'refund',
+         amount: totalRefundAmount,
+         status: 'completed',
+         description: `Refund for rejected Facebook Ad account top-up request ID: ${accountId}`,
+         balanceBefore: Number(userWallet.amount) - totalRefundAmount,
+         balanceAfter: Number(userWallet.amount),
+      };
+
+      console.log('Wallet Ledger Entry:', walletLedgerEntry);
+
+      await WalletLedger.create(walletLedgerEntry);
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Facebook Ad account deposit updated successfully',
+      data: newUpdatedAccount,
    };
 };

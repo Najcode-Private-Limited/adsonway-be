@@ -19,6 +19,8 @@ const {
    handleGetAllUser,
    handleGetAllGoogleIdTopupRequests,
    handleGetAllFacebookIdTopupRequests,
+   handleUpdateGoogleAdAccountDeposit,
+   handleUpdateFacebookAdAccountDeposit,
 } = require('../../controllers/admin');
 const { isAdmin } = require('../../middlewares/auth');
 const router = express.Router();
@@ -77,4 +79,11 @@ router
    .get(isAdmin, handleGetAllFacebookIdTopupRequests);
 
 router.route('/get-all-user').get(isAdmin, handleGetAllUser);
+
+router
+   .route('/update-google-ad-account-deposit/:id')
+   .patch(isAdmin, handleUpdateGoogleAdAccountDeposit);
+router
+   .route('/update-facebook-ad-account-deposit/:id')
+   .patch(isAdmin, handleUpdateFacebookAdAccountDeposit);
 module.exports = router;

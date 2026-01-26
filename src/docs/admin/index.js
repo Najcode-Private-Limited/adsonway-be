@@ -506,3 +506,83 @@
  *       403:
  *         description: Admin access required
  */
+
+/**
+ * @swagger
+ * /api/admin/update-google-ad-account-deposit/{id}:
+ *   patch:
+ *     summary: Update Google Ad Account Deposit Status
+ *     description: Admin can approve or reject a Google Ad account deposit request.
+ *     tags: [Account Topup]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Google Ad Account Deposit ID
+ *         schema:
+ *           type: string
+ *           example: 64f9e3a7c9d8a123456789ab
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [approved, rejected, pending]
+ *                 example: approved
+ *               reject_reason:
+ *                 type: string
+ *                 example: Invalid transaction screenshot
+ *     responses:
+ *       200:
+ *         description: Google Ad account deposit updated successfully
+ *       400:
+ *         description: Invalid Google Ad account ID or update failed
+ */
+
+/**
+ * @swagger
+ * /api/admin/update-facebook-ad-account-deposit/{id}:
+ *   patch:
+ *     summary: Update Facebook Ad Account Deposit Status
+ *     description: Admin can approve or reject a Facebook Ad account deposit request.
+ *     tags: [Account Topup]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Facebook Ad Account Deposit ID
+ *         schema:
+ *           type: string
+ *           example: 64f9e3a7c9d8a123456789ab
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [approved, rejected, pending]
+ *                 example: rejected
+ *               reject_reason:
+ *                 type: string
+ *                 example: Payment verification failed
+ *     responses:
+ *       200:
+ *         description: Facebook Ad account deposit updated successfully
+ *       400:
+ *         description: Invalid Facebook Ad account ID or update failed
+ */

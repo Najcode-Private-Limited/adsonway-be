@@ -17,11 +17,11 @@ const {
    createNewGoogleAdAccountService,
    getAllGoogleAccountsService,
    getAllFacebookAdAccountsService,
-   updateFacebookAccountService,
-   updateGoogleAccountService,
    getAllUsersService,
    getAllRequestTopupGoogleIdAdminService,
    getAllRequestTopupFacebookIdAdminService,
+   updateFacebookAdAccountDepositService,
+   updateGoogleAdAccountDepositService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
@@ -550,3 +550,76 @@ exports.handleGetAllFacebookIdTopupRequests = asyncHandler(async (req, res) => {
          )
       );
 });
+
+exports.handleUpdateGoogleAdAccountDeposit = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+   const { reject_reason, status } = req.body;
+   if (!ObjectId.isValid(id)) {
+      return res
+         .status(400)
+         .json(
+            new ApiResponse(400, null, 'Invalid Google Ad account ID', false)
+         );
+   }
+
+   const payload = { status };
+   if (reject_reason) {
+      payload.rejectReason = reject_reason;
+   }
+
+   const result = await updateGoogleAdAccountDepositService(id, payload);
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Google Ad account deposit updated successfully',
+            true
+         )
+      );
+});
+
+exports.handleUpdateFacebookAdAccountDeposit = asyncHandler(
+   async (req, res) => {
+      const { id } = req.params;
+      const { reject_reason, status } = req.body;
+      if (!ObjectId.isValid(id)) {
+         return res
+            .status(400)
+            .json(
+               new ApiResponse(
+                  400,
+                  null,
+                  'Invalid Facebook Ad account ID',
+                  false
+               )
+            );
+      }
+      const payload = { status };
+      if (reject_reason) {
+         payload.rejectReason = reject_reason;
+      }
+      const result = await updateFacebookAdAccountDepositService(id, payload);
+      if (!result.success) {
+         return res
+            .status(400)
+            .json(new ApiResponse(400, null, result.message, false));
+      }
+      return res
+         .status(200)
+         .json(
+            new ApiResponse(
+               200,
+               result.data,
+               'Facebook Ad account deposit updated successfully',
+               true
+            )
+         );
+   }
+);
