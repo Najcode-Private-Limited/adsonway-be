@@ -242,47 +242,47 @@ exports.handleUpdateGoogleAdApplicationStatus = asyncHandler(
             walletId: userWallet._id,
             userId: userId,
             type: 'refund',
-            amount: checkExistance.deposit_amount,
+            amount: checkExistance.submissionFee,
             status: 'completed',
             description: `Refund for rejected Google Ad application ID: ${id}`,
             balanceBefore:
-               Number(userWallet.amount) - checkExistance.deposit_amount,
+               Number(userWallet.amount) - checkExistance.submissionFee,
             balanceAfter: Number(userWallet.amount),
          };
 
          await WalletLedger.create(walletLedgerEntry);
       }
 
-      if (status === 'approved') {
-         const userId = checkExistance.user._id;
+      // if (status === 'approved') {
+      //    const userId = checkExistance.user._id;
 
-         const newAccountPayload = {
-            user: userId,
-            account_name: checkExistance.account_name,
-            account_id: checkExistance.account_id,
-            timezone: checkExistance.timezone,
-            deposit_amount: checkExistance.deposit_amount,
-            application_fee: checkExistance.application_fee,
-            deposit_fee: checkExistance.deposit_fee,
-            promotional_website: checkExistance.promotional_website,
-            gmail_id: checkExistance.gmail_id,
-         };
+      //    const newAccountPayload = {
+      //       user: userId,
+      //       account_name: checkExistance.account_name,
+      //       account_id: checkExistance.account_id,
+      //       timezone: checkExistance.timezone,
+      //       deposit_amount: checkExistance.deposit_amount,
+      //       application_fee: checkExistance.application_fee,
+      //       deposit_fee: checkExistance.deposit_fee,
+      //       promotional_website: checkExistance.promotional_website,
+      //       gmail_id: checkExistance.gmail_id,
+      //    };
 
-         const newAccount = await createNewGoogleAccount(newAccountPayload);
+      //    const newAccount = await createNewGoogleAccount(newAccountPayload);
 
-         if (!newAccount) {
-            return res
-               .status(500)
-               .json(
-                  new ApiResponse(
-                     500,
-                     null,
-                     'Failed to create Google Ad account after application approval',
-                     false
-                  )
-               );
-         }
-      }
+      //    if (!newAccount) {
+      //       return res
+      //          .status(500)
+      //          .json(
+      //             new ApiResponse(
+      //                500,
+      //                null,
+      //                'Failed to create Google Ad account after application approval',
+      //                false
+      //             )
+      //          );
+      //    }
+      // }
       const result = await updateGoogleAdApplication(id, { status, adminNote });
       if (!result) {
          return res
@@ -358,46 +358,48 @@ exports.handleUpdateFacebookAdApplicationStatus = asyncHandler(
             walletId: userWallet._id,
             userId: userId,
             type: 'refund',
-            amount: checkExistance.deposit_amount,
+            amount: checkExistance.submissionFee,
             status: 'completed',
             description: `Refund for rejected Facebook Ad application ID: ${id}`,
             balanceBefore:
-               Number(userWallet.amount) - checkExistance.deposit_amount,
+               Number(userWallet.amount) - checkExistance.submissionFee,
             balanceAfter: Number(userWallet.amount),
          };
 
          await WalletLedger.create(walletLedgerEntry);
       }
 
-      if (status === 'approved') {
-         const userId = checkExistance.user._id;
+      // if (status === 'approved') {
+      //    const userId = checkExistance.user._id;
 
-         const newAccountPayload = {
-            user: userId,
-            license_number: checkExistance.license_number,
-            account_name: checkExistance.account_name,
-            account_id: checkExistance.account_id,
-            timezone: checkExistance.timezone,
-            deposit_amount: checkExistance.deposit_amount,
-            application_fee: checkExistance.application_fee,
-            deposit_fee: checkExistance.deposit_fee,
-         };
+      //    const newAccountPayload = {
+      //       user: userId,
+      //       license_number: checkExistance.licenseNumber,
+      //       account_name: checkExistance.account_name,
+      //       account_id: checkExistance.account_id,
+      //       timezone: checkExistance.timezone,
+      //       deposit_amount: checkExistance.submissionFee,
+      //       application_fee: checkExistance.application_fee,
+      //       deposit_fee: checkExistance.deposit_fee,
+      //    };
 
-         const newAccount = await createNewFacebookAccount(newAccountPayload);
+      //    console.log('New Account Payload:', newAccountPayload);
 
-         if (!newAccount) {
-            return res
-               .status(500)
-               .json(
-                  new ApiResponse(
-                     500,
-                     null,
-                     'Failed to create Facebook Ad account after application approval',
-                     false
-                  )
-               );
-         }
-      }
+      //    const newAccount = await createNewFacebookAccount(newAccountPayload);
+
+      //    if (!newAccount) {
+      //       return res
+      //          .status(500)
+      //          .json(
+      //             new ApiResponse(
+      //                500,
+      //                null,
+      //                'Failed to create Facebook Ad account after application approval',
+      //                false
+      //             )
+      //          );
+      //    }
+      // }
 
       const result = await updateFacebookAdApplication(id, {
          status,
@@ -801,3 +803,77 @@ exports.handleUpdateFacebookAdAccountDeposit = asyncHandler(
          );
    }
 );
+
+exports.handleModifyUserWallet = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+   const { transcationType, amount, transcationId, paymentMethod, remarks } =
+      req.body;
+
+   if (!ObjectId.isValid(id)) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, 'Invalid User ID', false));
+   }
+
+   const userWallet = await getWalletByUserId(id);
+   if (!userWallet) {
+      return res
+         .status(404)
+         .json(new ApiResponse(404, null, 'User wallet not found', false));
+   }
+
+   const requiredFields = [
+      'transcationType',
+      'amount',
+      'transcationId',
+      'paymentMethod',
+   ];
+
+   const validation = validateRequiredFields(req.body, requiredFields);
+
+   if (!validation.isValid) {
+      return res.status(400).json(validation.response);
+   }
+
+   if (transcationType === 'credit') {
+      userWallet.amount += amount;
+      await userWallet.save();
+
+      const walletLedgerEntry = {
+         walletId: userWallet._id,
+         userId: id,
+         type: transcationType,
+         amount: amount,
+         status: 'completed',
+         description: `Admin modified wallet - Transaction ID: ${transcationId}, Payment Method: ${paymentMethod}, Remarks: ${remarks ? remarks : 'N/A'}`,
+         balanceBefore: Number(userWallet.amount) - amount,
+         balanceAfter: Number(userWallet.amount),
+      };
+
+      await WalletLedger.create(walletLedgerEntry);
+   } else if (transcationType === 'debit') {
+      if (userWallet.amount < amount) {
+         return res
+            .status(400)
+            .json(new ApiResponse(400, null, 'Insufficient balance', false));
+      }
+      userWallet.amount -= amount;
+      await userWallet.save();
+      const walletLedgerEntry = {
+         walletId: userWallet._id,
+         userId: id,
+         type: transcationType,
+         amount: amount,
+         status: 'completed',
+         description: `Admin modified wallet - Transaction ID: ${transcationId}, Payment Method: ${paymentMethod}, Remarks: ${remarks}`,
+         balanceBefore: Number(userWallet.amount) + amount,
+         balanceAfter: Number(userWallet.amount),
+      };
+      await WalletLedger.create(walletLedgerEntry);
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(200, null, 'User wallet modified successfully', true)
+      );
+});

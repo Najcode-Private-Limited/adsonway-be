@@ -1,4 +1,4 @@
-const ApiResponse = require('../async_handler/index');
+const ApiResponse = require('../api_response');
 
 const validateRequiredFields = (body, requiredFields) => {
    const missingFields = [];

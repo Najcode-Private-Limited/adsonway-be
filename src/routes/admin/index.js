@@ -21,6 +21,7 @@ const {
    handleGetAllFacebookIdTopupRequests,
    handleUpdateGoogleAdAccountDeposit,
    handleUpdateFacebookAdAccountDeposit,
+   handleModifyUserWallet,
 } = require('../../controllers/admin');
 const { isAdmin } = require('../../middlewares/auth');
 const router = express.Router();
@@ -86,4 +87,6 @@ router
 router
    .route('/update-facebook-ad-account-deposit/:id')
    .patch(isAdmin, handleUpdateFacebookAdAccountDeposit);
+
+router.route('/modify-user-wallet/:id').patch(isAdmin, handleModifyUserWallet);
 module.exports = router;

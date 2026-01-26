@@ -586,3 +586,107 @@
  *       400:
  *         description: Invalid Facebook Ad account ID or update failed
  */
+
+/**
+ * @swagger
+ * /api/admin/modify-user-wallet/{id}:
+ *   patch:
+ *     summary: Modify user wallet balance (credit or debit)
+ *     description: Admin can credit or debit a user's wallet and create a wallet ledger entry.
+ *     tags:
+ *       - Wallet Top-Up
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: User ID whose wallet needs to be modified
+ *         schema:
+ *           type: string
+ *           example: 64e8a7f5c2a9d9c0b1234567
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - transcationType
+ *               - amount
+ *               - transcationId
+ *               - paymentMethod
+ *               - remarks
+ *             properties:
+ *               transcationType:
+ *                 type: string
+ *                 enum: [credit, debit]
+ *                 example: credit
+ *               amount:
+ *                 type: number
+ *                 example: 500
+ *               transcationId:
+ *                 type: string
+ *                 example: TXN123456
+ *               paymentMethod:
+ *                 type: string
+ *                 example: UPI
+ *               remarks:
+ *                 type: string
+ *                 example: Admin wallet adjustment
+ *     responses:
+ *       200:
+ *         description: Wallet modified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 data:
+ *                   type: null
+ *                 message:
+ *                   type: string
+ *                   example: User wallet modified successfully
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Invalid input or insufficient balance
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 400
+ *                 data:
+ *                   type: null
+ *                 message:
+ *                   type: string
+ *                   example: Insufficient balance
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *       404:
+ *         description: User wallet not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 404
+ *                 data:
+ *                   type: null
+ *                 message:
+ *                   type: string
+ *                   example: User wallet not found
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ */
