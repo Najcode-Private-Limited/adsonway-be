@@ -1,10 +1,18 @@
 const ObjectId = require('mongoose').Types.ObjectId;
+const WalletLedger = require('../../models/wallet_ledger');
+const {
+   createNewFacebookAccount,
+} = require('../../repositories/facebook_account');
 const {
    updateFacebookAdApplication,
+   getFacebookAdApplicationById,
 } = require('../../repositories/facebook_application');
+const { createNewGoogleAccount } = require('../../repositories/google_account');
 const {
    updateGoogleAdApplication,
+   getGoogleAdApplicationById,
 } = require('../../repositories/google_application');
+const { getWalletByUserId } = require('../../repositories/wallet');
 const {
    createAdmin,
    createAgent,
@@ -191,6 +199,90 @@ exports.handleUpdateGoogleAdApplicationStatus = asyncHandler(
       const { id } = req.params;
       const { status } = req.body;
       const adminNote = req.body.admin_note || '';
+      const checkExistance = await getGoogleAdApplicationById(id);
+      if (!checkExistance) {
+         return res
+            .status(404)
+            .json(
+               new ApiResponse(
+                  404,
+                  null,
+                  'Google Ad application not found',
+                  false
+               )
+            );
+      }
+
+      if (
+         checkExistance.status === 'approved' ||
+         checkExistance.status === 'rejected'
+      ) {
+         return res
+            .status(400)
+            .json(
+               new ApiResponse(
+                  400,
+                  null,
+                  'Cannot update status of an application that is already approved or rejected',
+                  false
+               )
+            );
+      }
+
+      if (status === 'rejected') {
+         const userId = checkExistance.user._id;
+         const userWallet = await getWalletByUserId(userId);
+
+         if (userWallet) {
+            userWallet.amount += checkExistance.submissionFee;
+            await userWallet.save();
+         }
+
+         const walletLedgerEntry = {
+            walletId: userWallet._id,
+            userId: userId,
+            type: 'refund',
+            amount: checkExistance.deposit_amount,
+            status: 'completed',
+            description: `Refund for rejected Google Ad application ID: ${id}`,
+            balanceBefore:
+               Number(userWallet.amount) - checkExistance.deposit_amount,
+            balanceAfter: Number(userWallet.amount),
+         };
+
+         await WalletLedger.create(walletLedgerEntry);
+      }
+
+      if (status === 'approved') {
+         const userId = checkExistance.user._id;
+
+         const newAccountPayload = {
+            user: userId,
+            account_name: checkExistance.account_name,
+            account_id: checkExistance.account_id,
+            timezone: checkExistance.timezone,
+            deposit_amount: checkExistance.deposit_amount,
+            application_fee: checkExistance.application_fee,
+            deposit_fee: checkExistance.deposit_fee,
+            promotional_website: checkExistance.promotional_website,
+            gmail_id: checkExistance.gmail_id,
+         };
+
+         const newAccount = await createNewGoogleAccount(newAccountPayload);
+
+         if (!newAccount) {
+            return res
+               .status(500)
+               .json(
+                  new ApiResponse(
+                     500,
+                     null,
+                     'Failed to create Google Ad account after application approval',
+                     false
+                  )
+               );
+         }
+      }
       const result = await updateGoogleAdApplication(id, { status, adminNote });
       if (!result) {
          return res
@@ -211,6 +303,126 @@ exports.handleUpdateGoogleAdApplicationStatus = asyncHandler(
                200,
                result,
                'Google Ad application status updated successfully',
+               true
+            )
+         );
+   }
+);
+
+exports.handleUpdateFacebookAdApplicationStatus = asyncHandler(
+   async (req, res) => {
+      const { id } = req.params;
+      const { status } = req.body;
+      const adminNote = req.body.admin_note || '';
+
+      const checkExistance = await getFacebookAdApplicationById(id);
+      if (!checkExistance) {
+         return res
+            .status(404)
+            .json(
+               new ApiResponse(
+                  404,
+                  null,
+                  'Facebook Ad application not found',
+                  false
+               )
+            );
+      }
+
+      if (
+         checkExistance.status === 'approved' ||
+         checkExistance.status === 'rejected'
+      ) {
+         return res
+            .status(400)
+            .json(
+               new ApiResponse(
+                  400,
+                  null,
+                  'Cannot update status of an application that is already approved or rejected',
+                  false
+               )
+            );
+      }
+
+      if (status === 'rejected') {
+         const userId = checkExistance.user._id;
+         const userWallet = await getWalletByUserId(userId);
+
+         if (userWallet) {
+            userWallet.amount += checkExistance.submissionFee;
+            await userWallet.save();
+         }
+
+         const walletLedgerEntry = {
+            walletId: userWallet._id,
+            userId: userId,
+            type: 'refund',
+            amount: checkExistance.deposit_amount,
+            status: 'completed',
+            description: `Refund for rejected Facebook Ad application ID: ${id}`,
+            balanceBefore:
+               Number(userWallet.amount) - checkExistance.deposit_amount,
+            balanceAfter: Number(userWallet.amount),
+         };
+
+         await WalletLedger.create(walletLedgerEntry);
+      }
+
+      if (status === 'approved') {
+         const userId = checkExistance.user._id;
+
+         const newAccountPayload = {
+            user: userId,
+            license_number: checkExistance.license_number,
+            account_name: checkExistance.account_name,
+            account_id: checkExistance.account_id,
+            timezone: checkExistance.timezone,
+            deposit_amount: checkExistance.deposit_amount,
+            application_fee: checkExistance.application_fee,
+            deposit_fee: checkExistance.deposit_fee,
+         };
+
+         const newAccount = await createNewFacebookAccount(newAccountPayload);
+
+         if (!newAccount) {
+            return res
+               .status(500)
+               .json(
+                  new ApiResponse(
+                     500,
+                     null,
+                     'Failed to create Facebook Ad account after application approval',
+                     false
+                  )
+               );
+         }
+      }
+
+      const result = await updateFacebookAdApplication(id, {
+         status,
+         adminNote,
+      });
+
+      if (!result) {
+         return res
+            .status(400)
+            .json(
+               new ApiResponse(
+                  400,
+                  null,
+                  'Failed to update application status',
+                  false
+               )
+            );
+      }
+      return res
+         .status(200)
+         .json(
+            new ApiResponse(
+               200,
+               result,
+               'Facebook Ad application status updated successfully',
                true
             )
          );
@@ -241,40 +453,6 @@ exports.handleGetAllFacebookAdApplications = asyncHandler(async (req, res) => {
          )
       );
 });
-
-exports.handleUpdateFacebookAdApplicationStatus = asyncHandler(
-   async (req, res) => {
-      const { id } = req.params;
-      const { status } = req.body;
-      const adminNote = req.body.admin_note || '';
-      const result = await updateFacebookAdApplication(id, {
-         status,
-         adminNote,
-      });
-      if (!result) {
-         return res
-            .status(400)
-            .json(
-               new ApiResponse(
-                  400,
-                  null,
-                  'Failed to update application status',
-                  false
-               )
-            );
-      }
-      return res
-         .status(200)
-         .json(
-            new ApiResponse(
-               200,
-               result,
-               'Facebook Ad application status updated successfully',
-               true
-            )
-         );
-   }
-);
 
 exports.handleCreateNewGoogleAdAccount = asyncHandler(async (req, res) => {
    const { user } = req.body;

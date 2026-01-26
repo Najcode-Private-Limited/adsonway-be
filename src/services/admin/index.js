@@ -622,20 +622,12 @@ exports.updateGoogleAdAccountDepositService = async (
    }
 
    if (depositData.status === 'rejected') {
-      const walletId = newUpdatedAccount.walletId;
       const refundAmount = newUpdatedAccount.amount;
 
       const userWallet = await getWalletByUserId(newUpdatedAccount.userId);
-      const paymentRule = await getPaymentFeeRuleForUser(
-         newUpdatedAccount.userId
-      );
-
-      const refundMoneyPercentage = paymentRule.google_commission;
-      const totalRefundAmount =
-         refundAmount + (refundMoneyPercentage / 100) * refundAmount;
 
       if (userWallet) {
-         userWallet.amount += totalRefundAmount;
+         userWallet.amount += refundAmount;
          await userWallet.save();
       }
 
@@ -643,10 +635,10 @@ exports.updateGoogleAdAccountDepositService = async (
          walletId: userWallet._id,
          userId: newUpdatedAccount.userId,
          type: 'refund',
-         amount: totalRefundAmount,
+         amount: refundAmount,
          status: 'completed',
          description: `Refund for rejected Google Ad account top-up request ID: ${accountId}`,
-         balanceBefore: userWallet.amount - totalRefundAmount,
+         balanceBefore: userWallet.amount - refundAmount,
          balanceAfter: userWallet.amount,
       });
    }
@@ -710,16 +702,9 @@ exports.updateFacebookAdAccountDepositService = async (
       const refundAmount = newUpdatedAccount.amount;
 
       const userWallet = await getWalletByUserId(newUpdatedAccount.userId);
-      const paymentRule = await getPaymentFeeRuleForUser(
-         newUpdatedAccount.userId
-      );
-
-      const refundMoneyPercentage = paymentRule.facebook_commission;
-      const totalRefundAmount =
-         refundAmount + (refundMoneyPercentage / 100) * refundAmount;
 
       if (userWallet) {
-         userWallet.amount += totalRefundAmount;
+         userWallet.amount += refundAmount;
          await userWallet.save();
       }
 
@@ -727,15 +712,12 @@ exports.updateFacebookAdAccountDepositService = async (
          walletId: userWallet._id,
          userId: newUpdatedAccount.userId,
          type: 'refund',
-         amount: totalRefundAmount,
+         amount: refundAmount,
          status: 'completed',
          description: `Refund for rejected Facebook Ad account top-up request ID: ${accountId}`,
-         balanceBefore: Number(userWallet.amount) - totalRefundAmount,
+         balanceBefore: Number(userWallet.amount) - refundAmount,
          balanceAfter: Number(userWallet.amount),
       };
-
-      console.log('Wallet Ledger Entry:', walletLedgerEntry);
-
       await WalletLedger.create(walletLedgerEntry);
    }
    return {

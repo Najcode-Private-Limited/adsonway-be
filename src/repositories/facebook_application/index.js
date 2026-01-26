@@ -44,3 +44,10 @@ exports.getAllFacebookAdApplications = async (query, options) => {
       .populate({ path: 'user', select: 'username email full_name' });
    return applications;
 };
+
+exports.getFacebookAdApplicationById = async (applicationId) => {
+   const application = await FacebookApplication.findById(
+      applicationId
+   ).populate({ path: 'user', select: 'username email full_name' });
+   return application;
+};
