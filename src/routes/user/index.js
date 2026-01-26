@@ -9,6 +9,10 @@ const {
    handleGetMyFacebookAdApplications,
    handleGetAllMyFacebookAccounts,
    handleGetAllMyGoogleAccounts,
+   handleAddMoneyToGoogleAccount,
+   handleAddMoneyToFacebookAccount,
+   handleGetAllMyGoogleAccountTopupRequests,
+   handleGetAllMyFacebookAccountTopupRequests,
 } = require('../../controllers/user');
 const router = express.Router();
 
@@ -30,5 +34,20 @@ router
 router
    .route('/get-all-my-google-accounts')
    .get(isUser, handleGetAllMyGoogleAccounts);
+
+router
+   .route('/add-money-to-google-account/:id')
+   .post(isUser, handleAddMoneyToGoogleAccount);
+router
+   .route('/add-money-to-facebook-account/:id')
+   .post(isUser, handleAddMoneyToFacebookAccount);
+
+router
+   .route('/get-all-my-google-account-topup-requests')
+   .get(isUser, handleGetAllMyGoogleAccountTopupRequests);
+
+router
+   .route('/get-all-my-facebook-account-topup-requests')
+   .get(isUser, handleGetAllMyFacebookAccountTopupRequests);
 
 module.exports = router;

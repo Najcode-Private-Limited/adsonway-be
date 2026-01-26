@@ -348,3 +348,161 @@
  *       500:
  *         description: Internal server error
  */
+
+/**
+ * @swagger
+ * /api/admin/get-all-google-id-topup-requests:
+ *   get:
+ *     summary: Get all Google account top-up requests (Admin)
+ *     description: Admin can view all Google ID top-up requests with pagination and filters
+ *     tags: [Account Topup]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, disabled, deactivated]
+ *
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: integer
+ *           enum: [1, -1]
+ *           default: -1
+ *     responses:
+ *       200:
+ *         description: List of Google top-up requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GoogleTopupResponse'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                       example: 100
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
+ */
+
+/**
+ * @swagger
+ * /api/admin/get-all-facebook-id-topup-requests:
+ *   get:
+ *     summary: Get all Facebook account top-up requests (Admin)
+ *     description: Admin can view all Facebook ID top-up requests with pagination and filters
+ *     tags: [Account Topup]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, disabled, deactivated]
+ *
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: integer
+ *           enum: [1, -1]
+ *           default: -1
+ *     responses:
+ *       200:
+ *         description: List of Facebook top-up requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/FacebookTopupResponse'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                       example: 100
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
+ */

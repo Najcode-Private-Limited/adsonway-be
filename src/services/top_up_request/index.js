@@ -95,7 +95,6 @@ exports.getAllTopUpRequestsByUserService = async (userId) => {
       };
    }
    const topUpRequests = await getAllTopUpRequestByUser(userId);
-   console.log(topUpRequests);
    if (!topUpRequests) {
       return {
          statusCode: 500,

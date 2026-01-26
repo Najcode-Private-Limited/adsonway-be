@@ -48,3 +48,14 @@ exports.deleteFacebookAccountById = async (id) => {
    const response = await FacebookAccount.findByIdAndDelete(id);
    return response;
 };
+
+exports.getSpecificFacebookAccountForUser = async (userId, accountId) => {
+   const response = await FacebookAccount.findOne({
+      _id: accountId,
+      user: userId,
+   }).populate({
+      path: 'user',
+      select: 'full_name email username',
+   });
+   return response;
+};

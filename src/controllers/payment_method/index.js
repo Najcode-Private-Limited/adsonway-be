@@ -30,8 +30,6 @@ exports.handleGetAllPaymentMethod = asyncHandler(async (req, res) => {
 exports.handleGetSinglePaymentMethod = asyncHandler(async (req, res) => {
    const { id } = req.params;
 
-   console.log('Received ID:', id);
-
    if (!id) {
       return res.status(400).json(new ApiResponse(400, null, 'ID is required'));
    }
@@ -42,7 +40,6 @@ exports.handleGetSinglePaymentMethod = asyncHandler(async (req, res) => {
          .json(new ApiResponse(400, null, 'Invalid ID format'));
    }
 
-   console.log('Validated ID:', id);
    const response = await getSinglePaymentMethodService(id);
    if (!response.status) {
       return res

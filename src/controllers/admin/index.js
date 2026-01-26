@@ -20,6 +20,8 @@ const {
    updateFacebookAccountService,
    updateGoogleAccountService,
    getAllUsersService,
+   getAllRequestTopupGoogleIdAdminService,
+   getAllRequestTopupFacebookIdAdminService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
@@ -489,5 +491,62 @@ exports.handleGetAllUser = asyncHandler(async (req, res) => {
       .status(200)
       .json(
          new ApiResponse(200, result.data, 'Users retrieved successfully', true)
+      );
+});
+
+exports.handleGetAllGoogleIdTopupRequests = asyncHandler(async (req, res) => {
+   const filters = req.query;
+   const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      sort: req.query.sort || '-1',
+   };
+   const result = await getAllRequestTopupGoogleIdAdminService(
+      filters,
+      options
+   );
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Google ID top-up requests retrieved successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllFacebookIdTopupRequests = asyncHandler(async (req, res) => {
+   const filters = req.query;
+   const options = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 10,
+      sort: req.query.sort || '-1',
+   };
+
+   const result = await getAllRequestTopupFacebookIdAdminService(
+      filters,
+      options
+   );
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Facebook ID top-up requests retrieved successfully',
+            true
+         )
       );
 });

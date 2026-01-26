@@ -30,6 +30,12 @@ const {
    getPaymentFeeRuleForUser,
 } = require('../../repositories/payment_fee_rules');
 const user = require('../../models/user');
+const {
+   getRequestTopupGoogleIds,
+} = require('../../repositories/request_topoup_google_id');
+const {
+   getRequestTopupFacebookIds,
+} = require('../../repositories/request_topup_facebook_id');
 
 exports.createAdmin = async (adminData) => {
    const checkIfAdminExists = await checkExiststingInstance(
@@ -482,5 +488,79 @@ exports.getAllUsersService = async (filters) => {
       success: true,
       message: 'Users retrieved successfully',
       data: usersWithRules,
+   };
+};
+
+exports.getAllRequestTopupGoogleIdAdminService = async (filters, options) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const requests = await getRequestTopupGoogleIds(query, options);
+   if (!requests) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Google ID top-up requests',
+         data: null,
+      };
+   }
+
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Google ID top-up requests retrieved successfully',
+      data: {
+         requests,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(requests.length / options.limit),
+      },
+   };
+};
+
+exports.getAllRequestTopupFacebookIdAdminService = async (filters, options) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const requests = await getRequestTopupFacebookIds(query, options);
+   if (!requests) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Facebook ID top-up requests',
+         data: null,
+      };
+   }
+
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Facebook ID top-up requests retrieved successfully',
+      data: {
+         requests,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(requests.length / options.limit),
+      },
    };
 };

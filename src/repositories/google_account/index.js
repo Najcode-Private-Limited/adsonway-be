@@ -48,3 +48,14 @@ exports.deleteGoogleAccountById = async (id) => {
    const response = await GoogleAccount.findByIdAndDelete(id);
    return response;
 };
+
+exports.getSpecificGoogleAccountForUser = async (userId, accountId) => {
+   const response = await GoogleAccount.findOne({
+      _id: accountId,
+      user: userId,
+   }).populate({
+      path: 'user',
+      select: 'full_name email username',
+   });
+   return response;
+};

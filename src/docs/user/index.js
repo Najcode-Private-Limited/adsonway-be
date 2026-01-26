@@ -61,3 +61,235 @@
  *       404:
  *         description: Wallet not found
  */
+
+/**
+ * @swagger
+ * /api/user/add-money-to-google-account/{id}:
+ *   post:
+ *     summary: Add money to Google account (USER)
+ *     tags: [Account Topup]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Google Account ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/TopupRequest'
+ *     responses:
+ *       201:
+ *         description: Top-up request created
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/user/add-money-to-facebook-account/{id}:
+ *   post:
+ *     summary: Add money to Facebook account (USER)
+ *     tags: [Account Topup]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Facebook Account ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/TopupRequest'
+ *     responses:
+ *       201:
+ *         description: Top-up request created
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/user/get-all-my-google-account-topup-requests:
+ *   get:
+ *     summary: Get all Google account top-up requests of logged-in user
+ *     tags: [Account Topup]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, disabled, deactivated]
+ *
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: integer
+ *           enum: [1, -1]
+ *           default: -1
+ *     responses:
+ *       200:
+ *         description: List of Google top-up requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/GoogleTopupResponse'
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/user/get-all-my-facebook-account-topup-requests:
+ *   get:
+ *     summary: Get all Facebook account top-up requests of logged-in user
+ *     tags: [Account Topup]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, disabled, deactivated]
+ *
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: integer
+ *           enum: [1, -1]
+ *           default: -1
+ *     responses:
+ *       200:
+ *         description: List of Facebook top-up requests
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/FacebookTopupResponse'
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     TopupRequest:
+ *       type: object
+ *       required:
+ *         - amount
+ *         - transcationId
+ *         - paymentMethodId
+ *       properties:
+ *         amount:
+ *           type: number
+ *           example: 500
+ *         transcationId:
+ *           type: string
+ *           example: TXN123456
+ *         paymentMethodId:
+ *           type: string
+ *           example: 64f9e3a7c9d8a123456789ab
+ *         screenshotUrl:
+ *           type: string
+ *           example: https://image.com/ss.png
+ *         remarks:
+ *           type: string
+ *           example: Initial topup
+ *
+ *     GoogleTopupResponse:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         userId:
+ *           type: string
+ *         walletId:
+ *           type: string
+ *         account:
+ *           type: string
+ *         amount:
+ *           type: number
+ *         status:
+ *           type: string
+ *           enum: [pending, approved, rejected]
+ *         transcationId:
+ *           type: string
+ *         paymentMethodId:
+ *           type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *
+ *     FacebookTopupResponse:
+ *       allOf:
+ *         - $ref: '#/components/schemas/GoogleTopupResponse'
+ */

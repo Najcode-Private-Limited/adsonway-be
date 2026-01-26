@@ -39,8 +39,6 @@ exports.getTopUpRequestById = async (id) => {
 };
 
 exports.getTopUpRequestByTransactionId = async (transcationId) => {
-   console.log('Transaction ID in repo:', transcationId);
    const topUpRequest = await WalletTopupRequest.findOne({ transcationId });
-   console.log('Top Up Request found:', topUpRequest);
    return topUpRequest;
 };

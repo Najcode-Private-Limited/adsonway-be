@@ -1,4 +1,3 @@
-const { path } = require('../../app');
 const WalletLedger = require('../../models/wallet_ledger');
 
 exports.createNewWalletLedger = async (ledgerData, session) => {

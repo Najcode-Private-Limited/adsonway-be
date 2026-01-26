@@ -17,10 +17,21 @@ const {
 } = require('../../repositories/facebook_application');
 const {
    getAllFacebookAccountForUser,
+   getSpecificFacebookAccountForUser,
 } = require('../../repositories/facebook_account');
 const {
    getAllGoogleAccountForUser,
+   getSpecificGoogleAccountForUser,
 } = require('../../repositories/google_account');
+const { createNewWalletLedger } = require('../../repositories/wallet_ledger');
+const {
+   createNewRequestTopupGoogleId,
+   getRequestTopupGoogleIdsForUser,
+} = require('../../repositories/request_topoup_google_id');
+const {
+   createNewRequestTopupFacebookId,
+   getRequestTopupFacebookIdsForUser,
+} = require('../../repositories/request_topup_facebook_id');
 
 exports.updateUserProfileService = async (userId, updateData) => {
    const checkUserExistance = await getUserById(userId);
@@ -500,6 +511,285 @@ exports.getAllGoogleAccountForUserService = async (
          page: options.page,
          limit: options.limit,
          totalPages: Math.ceil(accounts.length / options.limit),
+      },
+   };
+};
+
+exports.requestTopupGoogleIdService = async (accountId, topupData, userId) => {
+   const checkAccountExistance = await getSpecificGoogleAccountForUser(
+      userId,
+      accountId
+   );
+   if (!checkAccountExistance) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Google account not found for this user',
+         data: null,
+      };
+   }
+   const userWallet = await getWalletByUserId(userId);
+   if (!userWallet) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Wallet not found for this user',
+         data: null,
+      };
+   }
+   const topupPayload = {
+      ...topupData,
+      userId: userId,
+      walletId: userWallet._id,
+      accountId: accountId,
+   };
+
+   const session = await mongoose.startSession();
+   session.startTransaction();
+   const newTopupRequest = await createNewRequestTopupGoogleId(
+      topupPayload,
+      session
+   );
+   if (!newTopupRequest) {
+      await session.abortTransaction();
+      session.endSession();
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to create top-up request for Google account',
+         data: null,
+      };
+   }
+
+   const updatedBalance = userWallet.amount - topupData.amount;
+   userWallet.amount = updatedBalance;
+   const savedWallet = await userWallet.save({ session });
+   if (!savedWallet) {
+      await session.abortTransaction();
+      session.endSession();
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to update wallet balance after top-up request',
+         data: null,
+      };
+   }
+
+   const ledgerEntry = {
+      userId: userId,
+      walletId: userWallet._id,
+      type: 'debit',
+      amount: topupData.amount,
+      description: `Top-up request for Google account ${checkAccountExistance.account_name}`,
+      status: 'pending',
+      balanceBefore: userWallet.amount + topupData.amount,
+      balanceAfter: userWallet.amount,
+   };
+
+   const newLeadger = await createNewWalletLedger(ledgerEntry, session);
+   if (!newLeadger) {
+      await session.abortTransaction();
+      session.endSession();
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to create wallet ledger for top-up request',
+         data: null,
+      };
+   }
+   await session.commitTransaction();
+   session.endSession();
+   return {
+      statusCode: 201,
+      success: true,
+      message: 'Top-up request for Google account created successfully',
+      data: newTopupRequest,
+   };
+};
+
+exports.requestTopupFacebookIdService = async (
+   accountId,
+   topupData,
+   userId
+) => {
+   const checkAccountExistance = await getSpecificFacebookAccountForUser(
+      userId,
+      accountId
+   );
+
+   if (!checkAccountExistance) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Facebook account not found for this user',
+         data: null,
+      };
+   }
+   const userWallet = await getWalletByUserId(userId);
+   if (!userWallet) {
+      return {
+         statusCode: 404,
+         success: false,
+         message: 'Wallet not found for this user',
+         data: null,
+      };
+   }
+   const topupPayload = {
+      ...topupData,
+      userId: userId,
+      walletId: userWallet._id,
+      accountId: accountId,
+   };
+
+   const session = await mongoose.startSession();
+   session.startTransaction();
+
+   const newTopupRequest = await createNewRequestTopupFacebookId(
+      topupPayload,
+      userId,
+      session
+   );
+   if (!newTopupRequest) {
+      await session.abortTransaction();
+      session.endSession();
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to create top-up request for Facebook account',
+         data: null,
+      };
+   }
+
+   const updatedBalance = userWallet.amount - topupData.amount;
+   userWallet.amount = updatedBalance;
+   const savedWallet = await userWallet.save({ session });
+   if (!savedWallet) {
+      await session.abortTransaction();
+      session.endSession();
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to update wallet balance after top-up request',
+         data: null,
+      };
+   }
+
+   const ledgerEntry = {
+      userId: userId,
+      walletId: userWallet._id,
+      type: 'debit',
+      amount: topupData.amount,
+      description: `Top-up request for Facebook account ${checkAccountExistance.account_name}`,
+      status: 'pending',
+      balanceBefore: userWallet.amount + topupData.amount,
+      balanceAfter: userWallet.amount,
+   };
+
+   const newLeadger = await createNewWalletLedger(ledgerEntry, session);
+   if (!newLeadger) {
+      await session.abortTransaction();
+      session.endSession();
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to create wallet ledger for top-up request',
+         data: null,
+      };
+   }
+   await session.commitTransaction();
+   session.endSession();
+   return {
+      statusCode: 201,
+      success: true,
+      message: 'Top-up request for Facebook account created successfully',
+      data: newTopupRequest,
+   };
+};
+
+exports.getAllRequestTopupGoogleIdService = async (
+   userId,
+   filters,
+   options
+) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const requests = await getRequestTopupGoogleIdsForUser(
+      userId,
+      query,
+      options
+   );
+   if (!requests) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Google top-up requests',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Google top-up requests retrieved successfully',
+      data: {
+         requests,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(requests.length / options.limit),
+      },
+   };
+};
+
+exports.getAllRequestTopupFacebookIdService = async (
+   userId,
+   filters,
+   options
+) => {
+   const query = {};
+   if (filters.status) {
+      query.status = filters.status;
+   }
+   if (filters.startDate || filters.endDate) {
+      query.createdAt = {};
+      if (filters.startDate) {
+         query.createdAt.$gte = filters.startDate;
+      }
+      if (filters.endDate) {
+         query.createdAt.$lte = filters.endDate;
+      }
+   }
+   const requests = await getRequestTopupFacebookIdsForUser(
+      userId,
+      query,
+      options
+   );
+   if (!requests) {
+      return {
+         statusCode: 500,
+         success: false,
+         message: 'Failed to retrieve Facebook top-up requests',
+         data: null,
+      };
+   }
+   return {
+      statusCode: 200,
+      success: true,
+      message: 'Facebook top-up requests retrieved successfully',
+      data: {
+         requests,
+         page: options.page,
+         limit: options.limit,
+         totalPages: Math.ceil(requests.length / options.limit),
       },
    };
 };

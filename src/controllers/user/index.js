@@ -8,6 +8,10 @@ const {
    getMyFacebookAdApplicationsService,
    getAllGoogleAccountForUserService,
    getAllFacebookAccountForUserService,
+   requestTopupGoogleIdService,
+   requestTopupFacebookIdService,
+   getAllRequestTopupGoogleIdService,
+   getAllRequestTopupFacebookIdService,
 } = require('../../services/user');
 const ApiResponse = require('../../utils/api_response');
 const { asyncHandler } = require('../../utils/async_handler');
@@ -305,3 +309,165 @@ exports.handleGetAllMyFacebookAccounts = asyncHandler(async (req, res) => {
          )
       );
 });
+
+exports.handleAddMoneyToGoogleAccount = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+   const userId = req.user._id;
+
+   if (!ObjectId.isValid(id)) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, 'Invalid Google Account ID', false));
+   }
+
+   const requiredFields = [
+      'amount',
+      'transcationId',
+      'screenshotUrl',
+      'paymentMethodId',
+   ];
+
+   const validation = validateRequiredFields(req.body, requiredFields);
+
+   if (!validation.isValid) {
+      return res.status(400).json(validation.response);
+   }
+
+   const result = await requestTopupGoogleIdService(id, req.body, userId);
+
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Request for topup to Google account generated successfully',
+            true
+         )
+      );
+});
+
+exports.handleAddMoneyToFacebookAccount = asyncHandler(async (req, res) => {
+   const { id } = req.params;
+   const userId = req.user._id;
+
+   if (!ObjectId.isValid(id)) {
+      return res
+         .status(400)
+         .json(
+            new ApiResponse(400, null, 'Invalid Facebook Account ID', false)
+         );
+   }
+
+   const requiredFields = [
+      'amount',
+      'transcationId',
+      'screenshotUrl',
+      'paymentMethodId',
+   ];
+
+   const validation = validateRequiredFields(req.body, requiredFields);
+
+   if (!validation.isValid) {
+      return res.status(400).json(validation.response);
+   }
+
+   const result = await requestTopupFacebookIdService(id, req.body, userId);
+
+   if (!result.success) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, result.message, false));
+   }
+
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(
+            200,
+            result.data,
+            'Request for topup to Facebook account generated successfully',
+            true
+         )
+      );
+});
+
+exports.handleGetAllMyGoogleAccountTopupRequests = asyncHandler(
+   async (req, res) => {
+      const userId = req.user._id;
+      const filters = req.query;
+      const options = {
+         page: parseInt(req.query.page, 10) || 1,
+         limit: parseInt(req.query.limit, 10) || 10,
+         sort: req.query.sort || '-1',
+      };
+      if (!ObjectId.isValid(userId)) {
+         return res
+            .status(400)
+            .json(new ApiResponse(400, null, 'Invalid User ID format', false));
+      }
+      const result = await getAllRequestTopupGoogleIdService(
+         userId,
+         filters,
+         options
+      );
+      if (!result.success) {
+         return res
+            .status(400)
+            .json(new ApiResponse(400, null, result.message, false));
+      }
+      return res
+         .status(200)
+         .json(
+            new ApiResponse(
+               200,
+               result.data,
+               'Google account topup requests retrieved successfully',
+               true
+            )
+         );
+   }
+);
+
+exports.handleGetAllMyFacebookAccountTopupRequests = asyncHandler(
+   async (req, res) => {
+      const userId = req.user._id;
+      const filters = req.query;
+      const options = {
+         page: parseInt(req.query.page, 10) || 1,
+         limit: parseInt(req.query.limit, 10) || 10,
+         sort: req.query.sort || '-1',
+      };
+      if (!ObjectId.isValid(userId)) {
+         return res
+            .status(400)
+            .json(new ApiResponse(400, null, 'Invalid User ID format', false));
+      }
+      const result = await getAllRequestTopupFacebookIdService(
+         userId,
+         filters,
+         options
+      );
+      if (!result.success) {
+         return res
+            .status(400)
+            .json(new ApiResponse(400, null, result.message, false));
+      }
+      return res
+         .status(200)
+         .json(
+            new ApiResponse(
+               200,
+               result.data,
+               'Facebook account topup requests retrieved successfully',
+               true
+            )
+         );
+   }
+);
