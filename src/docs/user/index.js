@@ -252,15 +252,6 @@
  *         amount:
  *           type: number
  *           example: 500
- *         transcationId:
- *           type: string
- *           example: TXN123456
- *         paymentMethodId:
- *           type: string
- *           example: 64f9e3a7c9d8a123456789ab
- *         screenshotUrl:
- *           type: string
- *           example: https://image.com/ss.png
  *         remarks:
  *           type: string
  *           example: Initial topup
@@ -281,10 +272,6 @@
  *         status:
  *           type: string
  *           enum: [pending, approved, rejected]
- *         transcationId:
- *           type: string
- *         paymentMethodId:
- *           type: string
  *         createdAt:
  *           type: string
  *           format: date-time

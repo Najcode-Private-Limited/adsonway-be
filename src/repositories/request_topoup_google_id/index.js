@@ -11,8 +11,7 @@ exports.getRequestTopupGoogleIdById = async (id) => {
    const response = await RequestTopupGoogleId.findById(id)
       .populate({ path: 'accountId', select: 'account_name' })
       .populate({ path: 'userId', select: 'full_name email username' })
-      .populate({ path: 'walletId', select: 'amount' })
-      .populate({ path: 'paymentMethodId', select: 'method_name method_type' });
+      .populate({ path: 'walletId', select: 'amount' });
 
    return response;
 };
@@ -28,8 +27,7 @@ exports.getRequestTopupGoogleIds = async (query = {}, options = {}) => {
       .skip((page - 1) * limit)
       .populate('accountId', 'account_name')
       .populate('userId', 'full_name email username')
-      .populate('walletId', 'amount')
-      .populate('paymentMethodId', 'method_name method_type');
+      .populate('walletId', 'amount');
 
    return response;
 };
@@ -52,8 +50,7 @@ exports.getRequestTopupGoogleIdsForUser = async (
       .skip((page - 1) * limit)
       .populate('accountId', 'account_name')
       .populate('userId', 'full_name email username')
-      .populate('walletId', 'amount')
-      .populate('paymentMethodId', 'method_name method_type');
+      .populate('walletId', 'amount');
 
    return response;
 };

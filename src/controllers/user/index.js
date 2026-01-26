@@ -320,12 +320,7 @@ exports.handleAddMoneyToGoogleAccount = asyncHandler(async (req, res) => {
          .json(new ApiResponse(400, null, 'Invalid Google Account ID', false));
    }
 
-   const requiredFields = [
-      'amount',
-      'transcationId',
-      'screenshotUrl',
-      'paymentMethodId',
-   ];
+   const requiredFields = ['amount'];
 
    const validation = validateRequiredFields(req.body, requiredFields);
 
@@ -365,13 +360,7 @@ exports.handleAddMoneyToFacebookAccount = asyncHandler(async (req, res) => {
          );
    }
 
-   const requiredFields = [
-      'amount',
-      'transcationId',
-      'screenshotUrl',
-      'paymentMethodId',
-   ];
-
+   const requiredFields = ['amount'];
    const validation = validateRequiredFields(req.body, requiredFields);
 
    if (!validation.isValid) {

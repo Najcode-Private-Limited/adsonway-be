@@ -26,14 +26,6 @@ const requestTopupFacebokIdSchema = new mongoose.Schema(
          enum: ['pending', 'approved', 'rejected'],
          default: 'pending',
       },
-      transcationId: {
-         type: String,
-         required: true,
-      },
-      screenshotUrl: {
-         type: String,
-         default: null,
-      },
       remarks: {
          type: String,
          default: '',
@@ -41,11 +33,6 @@ const requestTopupFacebokIdSchema = new mongoose.Schema(
       rejectReason: {
          type: String,
          default: null,
-      },
-      paymentMethodId: {
-         type: mongoose.Schema.Types.ObjectId,
-         ref: 'PaymentMethod',
-         required: true,
       },
       approvedAt: {
          type: Date,
@@ -58,8 +45,6 @@ const requestTopupFacebokIdSchema = new mongoose.Schema(
    },
    { timestamps: true }
 );
-
-requestTopupFacebokIdSchema.index({ transcationId: 1 }, { unique: true });
 
 const RequestTopupFacebookId = mongoose.model(
    'RequestTopupFacebookId',

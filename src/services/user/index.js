@@ -537,6 +537,16 @@ exports.requestTopupGoogleIdService = async (accountId, topupData, userId) => {
          data: null,
       };
    }
+
+   if (userWallet.amount < topupData.amount) {
+      return {
+         statusCode: 400,
+         success: false,
+         message: 'Insufficient wallet balance for this top-up request',
+         data: null,
+      };
+   }
+
    const topupPayload = {
       ...topupData,
       userId: userId,
@@ -634,6 +644,16 @@ exports.requestTopupFacebookIdService = async (
          data: null,
       };
    }
+
+   if (userWallet.amount < topupData.amount) {
+      return {
+         statusCode: 400,
+         success: false,
+         message: 'Insufficient wallet balance for this top-up request',
+         data: null,
+      };
+   }
+
    const topupPayload = {
       ...topupData,
       userId: userId,
