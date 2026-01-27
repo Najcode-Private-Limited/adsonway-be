@@ -37,6 +37,10 @@ const refundApplicationSchema = new mongoose.Schema(
          enum: ['pending', 'approved', 'rejected'],
          default: 'pending',
       },
+      admin_notes: {
+         type: String,
+         default: '',
+      },
       reason: {
          type: String,
          required: true,

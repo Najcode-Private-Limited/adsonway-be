@@ -9,6 +9,7 @@ const {
    handleGetMyRefundApplications,
    handleGetAllRefundApplications,
    handleGetRefundApplicationById,
+   handleUpdateRefundApplicationStatus,
 } = require('../../controllers/refund_application');
 const router = express.Router();
 
@@ -24,5 +25,9 @@ router
 router
    .route('/get-refund-application/:id')
    .get(generalAuthenticate, handleGetRefundApplicationById);
+
+router
+   .route('/update-refund-application/:id')
+   .patch(isAdmin, handleUpdateRefundApplicationStatus);
 
 module.exports = router;

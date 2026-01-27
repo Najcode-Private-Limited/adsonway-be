@@ -165,3 +165,63 @@
  *       404:
  *         description: Refund application not found
  */
+
+/**
+ * @swagger
+ * /api/refund-application/update-refund-application/{id}:
+ *   patch:
+ *     summary: Update refund application status (Admin)
+ *     description: Allows admin to update refund application status, admin notes, or requested amount.
+ *     tags:
+ *       - Refund Application
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Refund application ID
+ *         schema:
+ *           type: string
+ *           example: 65a9e8f0b2c4a1d9e1234567
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, approved, rejected]
+ *                 example: approved
+ *               admin_notes:
+ *                 type: string
+ *                 example: Approved after verification
+ *               requested_amount:
+ *                 type: number
+ *                 example: 900
+ *     responses:
+ *       200:
+ *         description: Refund application updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 data:
+ *                   type: object
+ *                 message:
+ *                   type: string
+ *                   example: Refund application updated successfully
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Invalid refund application ID
+ *       500:
+ *         description: Failed to update refund application
+ */
