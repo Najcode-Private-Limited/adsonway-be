@@ -31,6 +31,7 @@ app.use(
    '/api/facebook-application-setting',
    require('./routes/facebook_application_setting')
 );
+app.use('/api/refund-application', require('./routes/refund_application'));
 
 /* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {
