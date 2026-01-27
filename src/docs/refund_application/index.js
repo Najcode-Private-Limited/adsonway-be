@@ -201,6 +201,12 @@
  *               requested_amount:
  *                 type: number
  *                 example: 900
+ *               fees_amount:
+ *                 type: number
+ *                 example: 45
+ *               total_refund_amount:
+ *                 type: number
+ *                 example: 855
  *     responses:
  *       200:
  *         description: Refund application updated successfully

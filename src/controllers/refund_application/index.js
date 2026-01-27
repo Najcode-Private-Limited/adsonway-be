@@ -243,6 +243,12 @@ exports.handleUpdateRefundApplicationStatus = asyncHandler(async (req, res) => {
    if (req.body.requested_amount) {
       payload.requested_amount = req.body.requested_amount;
    }
+   if (req.body.fees_amount) {
+      payload.fees_amount = req.body.fees_amount;
+   }
+   if (req.body.total_refund_amount) {
+      payload.total_refund_amount = req.body.total_refund_amount;
+   }
 
    const checkExistance = await getRefundApplicationById(id);
 
@@ -268,29 +274,11 @@ exports.handleUpdateRefundApplicationStatus = asyncHandler(async (req, res) => {
    }
 
    const userWallet = await getWalletByUserId(checkExistance.user._id);
-   console.log('User Wallet:', userWallet);
 
    if (!userWallet) {
       return res
          .status(404)
          .json(new ApiResponse(404, null, 'User wallet not found', false));
-   }
-
-   if (req.body.status === 'approved') {
-      userWallet.amount += checkExistance.total_refund_amount;
-      await userWallet.save();
-
-      const ledgerEntry = {
-         userId: checkExistance.user._id,
-         walletId: userWallet._id,
-         type: 'refund',
-         amount: checkExistance.total_refund_amount,
-         description: `Refund approved for application ID: ${checkExistance.account_id}`,
-         balanceAfter: userWallet.amount,
-         balanceBefore: userWallet.amount - checkExistance.total_refund_amount,
-      };
-
-      await WalletLedger.create(ledgerEntry);
    }
 
    const updatedRefundApplication = await updateRefundApplicationById(
@@ -309,6 +297,24 @@ exports.handleUpdateRefundApplicationStatus = asyncHandler(async (req, res) => {
                false
             )
          );
+   }
+
+   if (req.body.status === 'approved') {
+      userWallet.amount += updatedRefundApplication.total_refund_amount;
+      await userWallet.save();
+
+      const ledgerEntry = {
+         userId: checkExistance.user._id,
+         walletId: userWallet._id,
+         type: 'refund',
+         amount: updatedRefundApplication.total_refund_amount,
+         description: `Refund approved for application ID: ${checkExistance.account_id}`,
+         balanceAfter: userWallet.amount,
+         balanceBefore:
+            userWallet.amount - updatedRefundApplication.total_refund_amount,
+      };
+
+      await WalletLedger.create(ledgerEntry);
    }
 
    return res
