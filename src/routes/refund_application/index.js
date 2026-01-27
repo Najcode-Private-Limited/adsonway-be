@@ -1,5 +1,9 @@
 const express = require('express');
-const { isAdmin, isUser } = require('../../middlewares/auth');
+const {
+   isAdmin,
+   isUser,
+   generalAuthenticate,
+} = require('../../middlewares/auth');
 const {
    handleCreateNewRefundApplication,
    handleGetMyRefundApplications,
@@ -19,6 +23,6 @@ router
    .get(isAdmin, handleGetAllRefundApplications);
 router
    .route('/get-refund-application/:id')
-   .get(isAdmin, handleGetRefundApplicationById);
+   .get(generalAuthenticate, handleGetRefundApplicationById);
 
 module.exports = router;

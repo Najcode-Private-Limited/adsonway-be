@@ -41,6 +41,10 @@ const refundApplicationSchema = new mongoose.Schema(
          type: String,
          required: true,
       },
+      remarks: {
+         type: String,
+         default: '',
+      },
    },
    { timestamps: true }
 );
