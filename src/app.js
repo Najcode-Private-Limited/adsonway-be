@@ -32,6 +32,7 @@ app.use(
    require('./routes/facebook_application_setting')
 );
 app.use('/api/refund-application', require('./routes/refund_application'));
+app.use('/api/user/financial-reports', require('./routes/financial_report'));
 
 /* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {
