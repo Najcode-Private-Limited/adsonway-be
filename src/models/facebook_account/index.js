@@ -12,11 +12,9 @@ const facebookAccountSchema = new mongoose.Schema({
    },
    account_name: {
       type: String,
-      required: true,
    },
    account_id: {
       type: String,
-      required: true,
    },
    timezone: {
       type: String,
@@ -36,7 +34,7 @@ const facebookAccountSchema = new mongoose.Schema({
    },
    status: {
       type: String,
-      enum: ['active', 'disabled', 'deactivated'],
+      enum: ['active', 'disabled', 'deactivated', 'under_review'],
       default: 'active',
    },
 });

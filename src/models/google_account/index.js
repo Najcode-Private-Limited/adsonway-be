@@ -12,7 +12,6 @@ const googleAccountSchema = new mongoose.Schema({
    },
    account_id: {
       type: String,
-      required: true,
    },
    timezone: {
       type: String,
@@ -32,7 +31,7 @@ const googleAccountSchema = new mongoose.Schema({
    },
    status: {
       type: String,
-      enum: ['active', 'disabled', 'deactivated'],
+      enum: ['active', 'disabled', 'deactivated', 'under_review'],
       default: 'active',
    },
    promotional_website: {

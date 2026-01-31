@@ -12,6 +12,9 @@ const {
    updateGoogleAdApplication,
    getGoogleAdApplicationById,
 } = require('../../repositories/google_application');
+const {
+   getPaymentFeeRuleForUser,
+} = require('../../repositories/payment_fee_rules');
 const { getWalletByUserId } = require('../../repositories/wallet');
 const {
    createAdmin,
@@ -30,6 +33,8 @@ const {
    getAllRequestTopupFacebookIdAdminService,
    updateFacebookAdAccountDepositService,
    updateGoogleAdAccountDepositService,
+   updateGoogleAccountService,
+   updateFacebookAccountService,
 } = require('../../services/admin');
 const { getAllUsersForSpecificAgentService } = require('../../services/agent');
 const ApiResponse = require('../../utils/api_response/index');
@@ -253,36 +258,28 @@ exports.handleUpdateGoogleAdApplicationStatus = asyncHandler(
          await WalletLedger.create(walletLedgerEntry);
       }
 
-      // if (status === 'approved') {
-      //    const userId = checkExistance.user._id;
+      if (status === 'approved') {
+         const userPaymentRule = await getPaymentFeeRuleForUser(
+            checkExistance.user._id
+         );
 
-      //    const newAccountPayload = {
-      //       user: userId,
-      //       account_name: checkExistance.account_name,
-      //       account_id: checkExistance.account_id,
-      //       timezone: checkExistance.timezone,
-      //       deposit_amount: checkExistance.deposit_amount,
-      //       application_fee: checkExistance.application_fee,
-      //       deposit_fee: checkExistance.deposit_fee,
-      //       promotional_website: checkExistance.promotional_website,
-      //       gmail_id: checkExistance.gmail_id,
-      //    };
+         checkExistance?.adAccounts?.map(async (account) => {
+            const newAccountPayload = {
+               user: checkExistance.user._id,
+               account_name: account.accountName,
+               account_id: '',
+               timezone: account.timeZone,
+               deposit_amount: account.amount,
+               application_fee: checkExistance.google_application_fee || 0,
+               deposit_fee: userPaymentRule.google_commission || 0,
+               promotional_website: checkExistance.promotionalWebsite,
+               gmail_id: checkExistance.gmailId,
+               status: 'active',
+            };
 
-      //    const newAccount = await createNewGoogleAccount(newAccountPayload);
-
-      //    if (!newAccount) {
-      //       return res
-      //          .status(500)
-      //          .json(
-      //             new ApiResponse(
-      //                500,
-      //                null,
-      //                'Failed to create Google Ad account after application approval',
-      //                false
-      //             )
-      //          );
-      //    }
-      // }
+            await createNewGoogleAccount(newAccountPayload);
+         });
+      }
       const result = await updateGoogleAdApplication(id, { status, adminNote });
       if (!result) {
          return res
@@ -369,37 +366,27 @@ exports.handleUpdateFacebookAdApplicationStatus = asyncHandler(
          await WalletLedger.create(walletLedgerEntry);
       }
 
-      // if (status === 'approved') {
-      //    const userId = checkExistance.user._id;
+      if (status === 'approved') {
+         const userPaymentRule = await getPaymentFeeRuleForUser(
+            checkExistance.user._id
+         );
 
-      //    const newAccountPayload = {
-      //       user: userId,
-      //       license_number: checkExistance.licenseNumber,
-      //       account_name: checkExistance.account_name,
-      //       account_id: checkExistance.account_id,
-      //       timezone: checkExistance.timezone,
-      //       deposit_amount: checkExistance.submissionFee,
-      //       application_fee: checkExistance.application_fee,
-      //       deposit_fee: checkExistance.deposit_fee,
-      //    };
+         checkExistance?.adAccounts?.map(async (account) => {
+            const newAccountPayload = {
+               user: checkExistance.user._id,
+               license_number: checkExistance.licenseNumber,
+               account_name: account.accountName,
+               account_id: '',
+               timezone: account.timeZone,
+               deposit_amount: account.amount,
+               application_fee: userPaymentRule.facebook_application_fee || 0,
+               deposit_fee: userPaymentRule.facebook_commission || 0,
+               status: 'active',
+            };
 
-      //    console.log('New Account Payload:', newAccountPayload);
-
-      //    const newAccount = await createNewFacebookAccount(newAccountPayload);
-
-      //    if (!newAccount) {
-      //       return res
-      //          .status(500)
-      //          .json(
-      //             new ApiResponse(
-      //                500,
-      //                null,
-      //                'Failed to create Facebook Ad account after application approval',
-      //                false
-      //             )
-      //          );
-      //    }
-      // }
+            await createNewFacebookAccount(newAccountPayload);
+         });
+      }
 
       const result = await updateFacebookAdApplication(id, {
          status,

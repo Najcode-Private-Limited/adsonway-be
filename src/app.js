@@ -33,8 +33,15 @@ app.use(
 );
 app.use('/api/refund-application', require('./routes/refund_application'));
 app.use('/api/user/financial-reports', require('./routes/financial_report'));
-app.use('/api/admin/financial-reports', require('./routes/admin_financial_report'));
-app.use('/api/agent/financial-reports', require('./routes/agent_financial_report'));
+app.use(
+   '/api/admin/financial-reports',
+   require('./routes/admin_financial_report')
+);
+app.use(
+   '/api/agent/financial-reports',
+   require('./routes/agent_financial_report')
+);
+app.use('/api/bm-share', require('./routes/bm_share'));
 
 /* ---------------- Health Check ---------------- */
 app.get('/', (_req, res) => {
