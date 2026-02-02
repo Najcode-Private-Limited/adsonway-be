@@ -22,6 +22,8 @@ const {
    handleUpdateGoogleAdAccountDeposit,
    handleUpdateFacebookAdAccountDeposit,
    handleModifyUserWallet,
+   handleAdjustPlatformFee,
+   handleGetAllConfig,
 } = require('../../controllers/admin');
 const { isAdmin } = require('../../middlewares/auth');
 const router = express.Router();
@@ -89,4 +91,9 @@ router
    .patch(isAdmin, handleUpdateFacebookAdAccountDeposit);
 
 router.route('/modify-user-wallet/:id').patch(isAdmin, handleModifyUserWallet);
+
+router.route('/adjust-platform-fee').post(isAdmin, handleAdjustPlatformFee);
+
+router.route('/get-config').get(isAdmin, handleGetAllConfig);
+
 module.exports = router;

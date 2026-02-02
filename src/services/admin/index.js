@@ -1,4 +1,3 @@
-const e = require('express');
 const { hashPassword, comparePassword } = require('../../functions');
 const {
    getUsersByRole,
@@ -45,6 +44,7 @@ const {
    getWalletByUserId,
 } = require('../../repositories/wallet');
 const WalletLedger = require('../../models/wallet_ledger');
+const AgentCommission = require('../../models/agent_commision');
 
 exports.createAdmin = async (adminData) => {
    const checkIfAdminExists = await checkExiststingInstance(
@@ -103,7 +103,9 @@ exports.createAgent = async (agentData) => {
       };
    }
 
-   const payload = { ...agentData, role: 'agent' };
+   const { commision_percent, ...agentDataWithoutCommission } = agentData;
+
+   const payload = { ...agentDataWithoutCommission, role: 'agent' };
 
    const hashedPassword = await hashPassword(agentData.password);
    payload.password = hashedPassword;
@@ -119,6 +121,15 @@ exports.createAgent = async (agentData) => {
       };
    }
 
+   const agentPercentagePayload = {
+      user: newAgent._id,
+      commision_percent: commision_percent,
+   };
+
+   const newAgentCommision = await AgentCommission.create(
+      agentPercentagePayload
+   );
+
    const userData = newAgent.toObject();
    delete userData.password;
 
@@ -126,7 +137,10 @@ exports.createAgent = async (agentData) => {
       statusCode: 201,
       success: true,
       message: 'Agent created successfully',
-      data: userData,
+      data: {
+         ...userData,
+         commision_percent: newAgentCommision.commision_percent,
+      },
    };
 };
 

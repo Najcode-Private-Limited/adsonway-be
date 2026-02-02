@@ -1,4 +1,5 @@
 const ObjectId = require('mongoose').Types.ObjectId;
+const Config = require('../../models/config');
 const WalletLedger = require('../../models/wallet_ledger');
 const {
    createNewFacebookAccount,
@@ -70,9 +71,16 @@ exports.handleCreateAdmin = asyncHandler(async (req, res) => {
 });
 
 exports.handleCreateAgent = asyncHandler(async (req, res) => {
-   const { email, username, password, full_name, role = 'agent' } = req.body;
+   const {
+      email,
+      username,
+      password,
+      full_name,
+      role = 'agent',
+      commision_percent,
+   } = req.body;
 
-   if (!email || !username || !password || !full_name) {
+   if (!email || !username || !password || !full_name || !commision_percent) {
       return res
          .status(400)
          .json(new ApiResponse(400, null, 'All fields are required', false));
@@ -862,5 +870,53 @@ exports.handleModifyUserWallet = asyncHandler(async (req, res) => {
       .status(200)
       .json(
          new ApiResponse(200, null, 'User wallet modified successfully', true)
+      );
+});
+
+exports.handleAdjustPlatformFee = asyncHandler(async (req, res) => {
+   const { platform_fee } = req.body;
+
+   if (platform_fee === undefined || platform_fee === null) {
+      return res
+         .status(400)
+         .json(new ApiResponse(400, null, 'Platform fee is required', false));
+   }
+
+   const checkExistance = await Config.findOne({});
+   if (checkExistance) {
+      checkExistance.platform_fee = platform_fee;
+      await checkExistance.save();
+      return res
+         .status(200)
+         .json(
+            new ApiResponse(
+               200,
+               null,
+               'Platform fee updated successfully',
+               true
+            )
+         );
+   } else {
+      const newConfig = new Config({ platform_fee });
+      await newConfig.save();
+      return res
+         .status(201)
+         .json(
+            new ApiResponse(201, null, 'Platform fee set successfully', true)
+         );
+   }
+});
+
+exports.handleGetAllConfig = asyncHandler(async (req, res) => {
+   const config = await Config.findOne({});
+   if (!config) {
+      return res
+         .status(404)
+         .json(new ApiResponse(404, null, 'Config not found', false));
+   }
+   return res
+      .status(200)
+      .json(
+         new ApiResponse(200, config, 'Config retrieved successfully', true)
       );
 });

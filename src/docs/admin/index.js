@@ -144,6 +144,9 @@
  *                 type: string
  *                 example: admin
  *                 default: admin
+ *               commision_percent:
+ *                 type: number
+ *                 example: 10
  *     responses:
  *       201:
  *         description: User created successfully
@@ -686,6 +689,145 @@
  *                 message:
  *                   type: string
  *                   example: User wallet not found
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ */
+
+/**
+ * @swagger
+ * /api/admin/adjust-platform-fee:
+ *   post:
+ *     summary: Adjust or set platform fee
+ *     description: Creates or updates the platform fee configuration. Admin access required.
+ *     tags: [Config]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - platform_fee
+ *             properties:
+ *               platform_fee:
+ *                 type: number
+ *                 example: 5
+ *     responses:
+ *       200:
+ *         description: Platform fee updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 data:
+ *                   nullable: true
+ *                 message:
+ *                   type: string
+ *                   example: Platform fee updated successfully
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       201:
+ *         description: Platform fee set successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 201
+ *                 data:
+ *                   nullable: true
+ *                 message:
+ *                   type: string
+ *                   example: Platform fee set successfully
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Platform fee is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 400
+ *                 data:
+ *                   nullable: true
+ *                 message:
+ *                   type: string
+ *                   example: Platform fee is required
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ */
+
+/**
+ * @swagger
+ * /api/admin/get-config:
+ *   get:
+ *     summary: Get platform configuration
+ *     description: Fetch platform configuration. Admin access required.
+ *     tags: [Config]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Config retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 65c8d9f9a1b2c3d4e5f67890
+ *                     platform_fee:
+ *                       type: number
+ *                       example: 5
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                 message:
+ *                   type: string
+ *                   example: Config retrieved successfully
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       404:
+ *         description: Config not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 404
+ *                 data:
+ *                   nullable: true
+ *                 message:
+ *                   type: string
+ *                   example: Config not found
  *                 success:
  *                   type: boolean
  *                   example: false
