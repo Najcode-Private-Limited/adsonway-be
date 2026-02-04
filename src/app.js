@@ -41,6 +41,7 @@ app.use(
    '/api/agent/financial-reports',
    require('./routes/agent_financial_report')
 );
+app.use('/api/agent-commission', require('./routes/agent_commission'));
 app.use('/api/bm-share', require('./routes/bm_share'));
 
 /* ---------------- Health Check ---------------- */
