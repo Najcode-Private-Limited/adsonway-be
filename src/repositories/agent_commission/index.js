@@ -176,6 +176,13 @@ const calculateAgentMonthlyCommission = async (agentId, month, year) => {
 };
 
 exports.generateMonthlyReport = async (agentId, month, year) => {
+   const currentYear = new Date().getFullYear();
+   const currentMonth = new Date().getMonth() + 1;
+
+   if (year > currentYear || (year === currentYear && month > currentMonth)) {
+      return null;
+   }
+
    const data = await calculateAgentMonthlyCommission(agentId, month, year);
 
    const existing = await AgentCommissionLedger.findOne({
@@ -228,28 +235,60 @@ exports.recordPayment = async (agentId, month, year, amount, remarks = '') => {
    return ledger;
 };
 
-exports.getAllAgentsSummary = async (year) => {
-   const agents = await User.find({ role: 'agent' }).select('full_name email');
+exports.getAllAgentsSummary = async (year = new Date().getFullYear()) => {
+   const agents = await User.find({ role: 'agent' })
+      .select('full_name email')
+      .lean();
 
-   const summaries = [];
-   for (const agent of agents) {
-      const reports = await exports.getAgentReports(agent._id, year);
+   const currentYear = new Date().getFullYear();
+   const currentMonth = new Date().getMonth() + 1;
 
-      const totalCommission = reports.reduce(
-         (sum, r) => sum + r.calculatedCommission,
-         0
-      );
-      const totalPaid = reports.reduce((sum, r) => sum + r.paidAmount, 0);
-      const totalPending = reports.reduce((sum, r) => sum + r.pendingAmount, 0);
+   const summaries = await Promise.all(
+      agents.map(async (agent) => {
+         const maxMonth = year < currentYear ? 12 : Math.min(12, currentMonth);
+         await Promise.all(
+            Array.from({ length: maxMonth }, (_, i) =>
+               exports.generateMonthlyReport(agent._id, i + 1, year)
+            )
+         );
 
-      summaries.push({
-         agent: { _id: agent._id, name: agent.full_name, email: agent.email },
-         totalCommission,
-         totalPaid,
-         totalPending,
-         reports,
-      });
-   }
+         const reports = await exports.getAgentReports(agent._id, year);
+
+         const totals = reports.reduce(
+            (acc, r) => {
+               acc.totalCommission += r.calculatedCommission || 0;
+               acc.totalPaid += r.paidAmount || 0;
+               acc.totalPending += r.pendingAmount || 0;
+               return acc;
+            },
+            { totalCommission: 0, totalPaid: 0, totalPending: 0 }
+         );
+
+         return {
+            agent: {
+               _id: agent._id,
+               name: agent.full_name,
+               email: agent.email,
+            },
+            ...totals,
+            reports,
+         };
+      })
+   );
 
    return summaries;
+};
+
+exports.getAllMySummary = async (agentId, year) => {
+   const currentYear = new Date().getFullYear();
+   const currentMonth = new Date().getMonth() + 1;
+
+   const maxMonth = year < currentYear ? 12 : Math.min(12, currentMonth);
+   await Promise.all(
+      Array.from({ length: maxMonth }, (_, i) =>
+         exports.generateMonthlyReport(agentId, i + 1, year)
+      )
+   );
+   const reports = await exports.getAgentReports(agentId, year);
+   return reports;
 };

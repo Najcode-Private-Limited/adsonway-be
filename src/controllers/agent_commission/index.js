@@ -5,6 +5,7 @@ const {
    recordPayment,
    getAllAgentsSummary,
    getAgentReports,
+   getAllMySummary,
 } = require('../../repositories/agent_commission');
 
 // Agent: Get my monthly report
@@ -26,7 +27,7 @@ exports.getMyReports = asyncHandler(async (req, res) => {
    const { year } = req.query;
    const agentId = req.agent._id;
 
-   const reports = await getAgentReports(agentId, year ? parseInt(year) : null);
+   const reports = await getAllMySummary(agentId, year ? parseInt(year) : null);
 
    return res
       .status(200)
