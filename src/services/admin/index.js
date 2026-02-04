@@ -164,6 +164,17 @@ exports.getAllAdminService = async () => {
 
 exports.getAllAgentService = async () => {
    const agents = await getUsersByRole('agent');
+
+   const agentsWithCommission = await Promise.all(
+      agents.map(async (agent) => {
+         const commission = await AgentCommission.findOne({ user: agent._id });
+         return {
+            ...(agent.toObject?.() ?? agent),
+            commision_percent: commission ? commission.commision_percent : null,
+         };
+      })
+   );
+
    if (!agents) {
       return {
          statusCode: 500,
@@ -176,7 +187,7 @@ exports.getAllAgentService = async () => {
       statusCode: 200,
       success: true,
       message: 'Agents retrieved successfully',
-      data: agents,
+      data: agentsWithCommission,
    };
 };
 

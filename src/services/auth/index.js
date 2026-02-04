@@ -1,4 +1,5 @@
 const { comparePassword, hashPassword } = require('../../functions');
+const AgentCommission = require('../../models/agent_commision');
 const { createUser, getUserByUsername } = require('../../repositories/user');
 const { signToken } = require('../../utils/jwt');
 
@@ -38,8 +39,16 @@ const loginService = async (payload) => {
       role: user.role,
    });
 
+   let agentCommission = null;
+   if (user.role === 'agent') {
+      agentCommission = await AgentCommission.findOne({ user: user._id });
+   }
+
    const userData = user.toObject();
    delete userData.password;
+   if (agentCommission) {
+      userData.commision_percent = agentCommission.commision_percent;
+   }
    return {
       success: true,
       message: 'Login successful',
