@@ -2,8 +2,8 @@ const paymentMethod = require('../../models/payment_method');
 
 exports.getAllPaymentMethods = async (isUser) => {
    const response = isUser
-      ? await paymentMethod.find()
-      : await paymentMethod.find({ is_active: true });
+      ? await paymentMethod.find({ is_active: true })
+      : await paymentMethod.find();
    return response;
 };
 
