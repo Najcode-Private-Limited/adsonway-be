@@ -64,23 +64,32 @@ const facebookApplicationSchema = new mongoose.Schema(
          required: true,
          default: false,
       },
-
       numberOfDomains: {
-         type: Number,
+         type: mongoose.Schema.Types.Mixed,
          required: true,
-         min: 1,
+         validate: {
+            validator: function (value) {
+               if (value === 'unlimited') return true;
+               return typeof value === 'number' && value >= 1;
+            },
+            message: 'numberOfDomains must be a number ≥ 1 or "unlimited"',
+         },
       },
-
       domainUrls: {
          type: [String],
          validate: {
-            validator(value) {
-               return value.length === this.numberOfDomains;
+            validator: function (value) {
+               if (this.numberOfDomains === 'unlimited') {
+                  return Array.isArray(value);
+               }
+               if (typeof this.numberOfDomains === 'number') {
+                  return value.length === this.numberOfDomains;
+               }
+               return false;
             },
             message: 'Domain URLs count must match numberOfDomains',
          },
       },
-
       numberOfAccounts: {
          type: Number,
          required: true,

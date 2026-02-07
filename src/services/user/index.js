@@ -332,6 +332,8 @@ exports.applyFacebookAdService = async (userId, applicationData) => {
          session
       );
 
+      console.log('New Facebook Ad Application:', newApplication);
+
       if (!newApplication) {
          await session.abortTransaction();
          session.endSession();
