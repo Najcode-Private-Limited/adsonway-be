@@ -10,7 +10,7 @@ const {
 } = require('../../services/payment_method');
 
 exports.handleGetAllPaymentMethod = asyncHandler(async (req, res) => {
-   const isUser = req.params.isUser === 'true';
+   const isUser = req.query.isUser === 'true';
    const response = await getAllPaymentMethodService(isUser);
    if (!response.status) {
       return res
