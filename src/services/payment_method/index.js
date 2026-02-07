@@ -6,8 +6,8 @@ const {
    deletePaymentMethod,
 } = require('../../repositories/payment_method');
 
-exports.getAllPaymentMethodService = async () => {
-   const response = await getAllPaymentMethods();
+exports.getAllPaymentMethodService = async (isUser) => {
+   const response = await getAllPaymentMethods(isUser);
    if (!response) {
       return {
          status: false,

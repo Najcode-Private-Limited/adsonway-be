@@ -10,7 +10,8 @@ const {
 } = require('../../services/payment_method');
 
 exports.handleGetAllPaymentMethod = asyncHandler(async (req, res) => {
-   const response = await getAllPaymentMethodService();
+   const isUser = req.params.isUser === 'true';
+   const response = await getAllPaymentMethodService(isUser);
    if (!response.status) {
       return res
          .status(400)
@@ -58,13 +59,17 @@ exports.handleGetSinglePaymentMethod = asyncHandler(async (req, res) => {
 });
 
 exports.handleCreatePaymentMethod = asyncHandler(async (req, res) => {
-   const { name, description } = req.body;
+   const { name, description, qr_image } = req.body;
    if (!name) {
       return res
          .status(400)
          .json(new ApiResponse(400, null, 'Name is required'));
    }
-   const response = await createPaymentMethodService({ name, description });
+   const response = await createPaymentMethodService({
+      name,
+      description,
+      qr_image,
+   });
    if (!response.status) {
       return res
          .status(400)

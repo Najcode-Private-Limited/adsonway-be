@@ -11,6 +11,10 @@ const paymentMethodSchema = new mongoose.Schema(
          type: String,
          default: '',
       },
+      qr_image: {
+         type: String,
+         default: '',
+      },
       is_active: {
          type: Boolean,
          default: true,
