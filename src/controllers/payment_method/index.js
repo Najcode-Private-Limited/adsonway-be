@@ -88,7 +88,7 @@ exports.handleCreatePaymentMethod = asyncHandler(async (req, res) => {
 
 exports.handleUpdatePaymentMethod = asyncHandler(async (req, res) => {
    const { id } = req.params;
-   const { name, description, is_active } = req.body;
+   const { name, description, is_active, qr_image } = req.body;
 
    if (!id) {
       return res.status(400).json(new ApiResponse(400, null, 'ID is required'));
@@ -109,6 +109,7 @@ exports.handleUpdatePaymentMethod = asyncHandler(async (req, res) => {
       name,
       description,
       is_active,
+      qr_image,
    });
    if (!response.status) {
       return res
