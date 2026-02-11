@@ -32,7 +32,6 @@ const facebookApplicationSchema = new mongoose.Schema(
       licenseType: {
          type: String,
          enum: ['new', 'existing'],
-         required: true,
          default: 'new',
       },
 
@@ -44,7 +43,6 @@ const facebookApplicationSchema = new mongoose.Schema(
 
       numberOfPages: {
          type: Number,
-         required: true,
          min: 1,
          max: 5,
       },
@@ -61,12 +59,10 @@ const facebookApplicationSchema = new mongoose.Schema(
 
       hasFullAdminAccess: {
          type: Boolean,
-         required: true,
          default: false,
       },
       numberOfDomains: {
          type: mongoose.Schema.Types.Mixed,
-         required: true,
          validate: {
             validator: function (value) {
                if (value === 'unlimited') return true;
