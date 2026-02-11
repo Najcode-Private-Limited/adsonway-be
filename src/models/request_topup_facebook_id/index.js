@@ -21,6 +21,11 @@ const requestTopupFacebokIdSchema = new mongoose.Schema(
          type: Number,
          required: true,
       },
+      isCard: {
+         type: Boolean,
+         default: false,
+         required: true
+      },
       status: {
          type: String,
          enum: ['pending', 'approved', 'rejected'],

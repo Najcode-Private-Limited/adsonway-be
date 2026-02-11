@@ -1,11 +1,6 @@
 const FacebookApplication = require('../../models/facebook_application');
 
 exports.createNewFacebookAdApplication = async (userId, applicationData) => {
-   console.log(
-      'Creating Facebook Ad Application for User ID:',
-      userId,
-      applicationData
-   );
    try {
       const result = await FacebookApplication.create({
          user: userId,

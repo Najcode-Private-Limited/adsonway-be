@@ -123,7 +123,11 @@ const facebookApplicationSchema = new mongoose.Schema(
          default: 'pending',
          index: true,
       },
-
+      isCard: {
+         type: Boolean,
+         default: false,
+         required: true
+      },
       adminNote: {
          type: String,
          default: '',

@@ -286,6 +286,9 @@ exports.getMyFacebookAdApplicationsService = async (
    if (filters.status) {
       query.status = filters.status;
    }
+   if(filters.isCard !== null){
+      query.isCard = filters.isCard;
+   }
    if (filters.startDate || filters.endDate) {
       query.createdAt = {};
       if (filters.startDate) {
@@ -324,15 +327,12 @@ exports.getMyFacebookAdApplicationsService = async (
 exports.applyFacebookAdService = async (userId, applicationData) => {
    const session = await mongoose.startSession();
    session.startTransaction();
-
    try {
       const newApplication = await createNewFacebookAdApplication(
          userId,
          applicationData,
          session
       );
-
-      console.log('New Facebook Ad Application:', newApplication);
 
       if (!newApplication) {
          await session.abortTransaction();
@@ -443,6 +443,9 @@ exports.getAllFacebookAccountForUserService = async (
    const query = {};
    if (filters.status) {
       query.status = filters.status;
+   }
+   if(filters.isCard !== null){
+      query.isCard = filters.isCard;
    }
    if (filters.startDate || filters.endDate) {
       query.createdAt = {};
@@ -780,6 +783,9 @@ exports.getAllRequestTopupFacebookIdService = async (
    const query = {};
    if (filters.status) {
       query.status = filters.status;
+   }
+   if(filters.isCard !== null){
+      query.isCard = filters.isCard;
    }
    if (filters.startDate || filters.endDate) {
       query.createdAt = {};

@@ -23,6 +23,11 @@ const bmShareSchema = new mongoose.Schema({
       type: String,
       default: '',
    },
+   isCard: {
+      type: Boolean,
+      default: false,
+      required: true
+   },
    status: {
       type: String,
       enum: ['approved', 'rejected', 'pending'],

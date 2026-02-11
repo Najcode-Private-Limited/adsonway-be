@@ -32,6 +32,11 @@ const facebookAccountSchema = new mongoose.Schema({
       type: Number,
       required: true,
    },
+   isCard: {
+      type: Boolean,
+      default: false,
+      required: true
+   },
    status: {
       type: String,
       enum: ['active', 'disabled', 'deactivated', 'under_review'],

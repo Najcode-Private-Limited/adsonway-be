@@ -162,6 +162,7 @@ exports.handleApplyFacebookAd = asyncHandler(async (req, res) => {
       'numberOfDomains',
       'numberOfAccounts',
       'submissionFee',
+      'isCard'
    ];
 
    const validation = validateRequiredFields(req.body, requiredFields);
@@ -360,7 +361,7 @@ exports.handleAddMoneyToFacebookAccount = asyncHandler(async (req, res) => {
          );
    }
 
-   const requiredFields = ['amount'];
+   const requiredFields = ['amount', 'isCard'];
    const validation = validateRequiredFields(req.body, requiredFields);
 
    if (!validation.isValid) {
