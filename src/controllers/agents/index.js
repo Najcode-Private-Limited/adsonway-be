@@ -16,11 +16,9 @@ exports.handleCreatUser = asyncHandler(async (req, res) => {
       facebook_commission,
       google_commission,
       facebook_credit_commission,
-      google_credit_commission,
       facebook_application_fee,
       google_application_fee,
       facebook_credit_application_fee,
-      google_credit_application_fee,
    } = req.body;
 
    if (!email || !username || !password || !full_name) {
@@ -33,11 +31,9 @@ exports.handleCreatUser = asyncHandler(async (req, res) => {
       facebook_application_fee,
       google_application_fee,
       facebook_credit_commission,
-      google_credit_commission,
       facebook_commission,
       google_commission,
       facebook_credit_application_fee,
-      google_credit_application_fee,
    ];
 
    if (feesAndCommissions.some((v) => v === undefined || v === null)) {

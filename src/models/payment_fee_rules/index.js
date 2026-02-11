@@ -14,10 +14,6 @@ const platformFeeSchema = new mongoose.Schema(
          type: Number,
          required: true,
       },
-      google_credit_commission: {
-         type: Number,
-         required: true,
-      },
       facebook_application_fee: {
          type: Number,
          required: true,
@@ -27,10 +23,6 @@ const platformFeeSchema = new mongoose.Schema(
          required: true,
       },
       facebook_credit_application_fee: {
-         type: Number,
-         required: true,
-      },
-      google_credit_application_fee: {
          type: Number,
          required: true,
       },

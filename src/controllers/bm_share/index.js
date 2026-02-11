@@ -11,7 +11,7 @@ const { asyncHandler } = require('../../utils/async_handler');
 const validateRequiredFields = require('../../utils/validate_fields');
 
 exports.handleApplyBMShare = asyncHandler(async (req, res) => {
-   const requiredFields = ['shared_id', 'account'];
+   const requiredFields = ['shared_id', 'account', 'isCard'];
 
    const validation = validateRequiredFields(req.body, requiredFields);
 
@@ -23,6 +23,7 @@ exports.handleApplyBMShare = asyncHandler(async (req, res) => {
       user: req.user._id,
       shared_id: req.body.shared_id,
       account: req.body.account,
+      isCard: req.body.isCard,
       notes: req.body.notes || '',
    };
 
@@ -81,6 +82,9 @@ exports.handleGetAllBMShareForUser = asyncHandler(async (req, res) => {
    const query = {};
    if (filters.status) {
       query.status = filters.status;
+   }
+   if (filters.isCard !== null && filters.isCard !== undefined) {
+      query.isCard = filters.isCard === true || filters.isCard === 'true';
    }
    if (filters.startDate || filters.endDate) {
       query.createdAt = {};
