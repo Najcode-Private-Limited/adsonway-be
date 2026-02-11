@@ -286,8 +286,8 @@ exports.getMyFacebookAdApplicationsService = async (
    if (filters.status) {
       query.status = filters.status;
    }
-   if(filters.isCard !== null){
-      query.isCard = filters.isCard;
+   if (filters.isCard !== null && filters.isCard !== undefined) {
+      query.isCard = filters.isCard === true || filters.isCard === 'true';
    }
    if (filters.startDate || filters.endDate) {
       query.createdAt = {};
@@ -444,8 +444,8 @@ exports.getAllFacebookAccountForUserService = async (
    if (filters.status) {
       query.status = filters.status;
    }
-   if(filters.isCard !== null){
-      query.isCard = filters.isCard;
+   if (filters.isCard !== null && filters.isCard !== undefined) {
+      query.isCard = filters.isCard === true || filters.isCard === 'true';
    }
    if (filters.startDate || filters.endDate) {
       query.createdAt = {};
@@ -784,8 +784,8 @@ exports.getAllRequestTopupFacebookIdService = async (
    if (filters.status) {
       query.status = filters.status;
    }
-   if(filters.isCard !== null){
-      query.isCard = filters.isCard;
+   if (filters.isCard !== null && filters.isCard !== undefined) {
+      query.isCard = filters.isCard === true || filters.isCard === 'true';
    }
    if (filters.startDate || filters.endDate) {
       query.createdAt = {};
