@@ -379,21 +379,33 @@ exports.handleUpdateFacebookAdApplicationStatus = asyncHandler(
             checkExistance.user._id
          );
 
-         checkExistance?.adAccounts?.map(async (account) => {
-            const newAccountPayload = {
-               user: checkExistance.user._id,
-               license_number: checkExistance.licenseNumber,
-               account_name: account.accountName,
-               account_id: '',
-               timezone: account.timeZone,
-               deposit_amount: account.amount,
-               application_fee: userPaymentRule.facebook_application_fee || 0,
-               deposit_fee: userPaymentRule.facebook_commission || 0,
-               status: 'active',
-            };
+         const now = Date.now();
+         await Promise.all(
+            (checkExistance?.adAccounts || []).map((account, index) => {
+               const uniqueSuffix = `${now}-${index}`;
 
-            await createNewFacebookAccount(newAccountPayload);
-         });
+               const newAccountPayload = {
+                  user: checkExistance.user._id,
+                  license_number:
+                     checkExistance.licenseNumber || `LIC-${uniqueSuffix}`,
+                  account_name:
+                     account.accountName || `NAME-${uniqueSuffix}`,
+                  account_id: '',
+                  timezone: account.timeZone,
+                  deposit_amount: account.amount,
+                  application_fee: account.isCard
+                     ? userPaymentRule.facebook_credit_application_fee
+                     : userPaymentRule.facebook_application_fee || 0,
+                  deposit_fee: account.isCard
+                     ? userPaymentRule.facebook_credit_commission
+                     : userPaymentRule.facebook_commission || 0,
+                  status: 'active',
+               };
+
+               return createNewFacebookAccount(newAccountPayload);
+            })
+         );
+
       }
 
       const result = await updateFacebookAdApplication(id, {
