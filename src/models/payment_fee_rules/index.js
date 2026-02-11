@@ -10,11 +10,11 @@ const platformFeeSchema = new mongoose.Schema(
          type: Number,
          required: true,
       },
-      snapchat_commission: {
+      facebook_credit_commission: {
          type: Number,
          required: true,
       },
-      tiktok_commission: {
+      google_credit_commission: {
          type: Number,
          required: true,
       },
@@ -26,11 +26,11 @@ const platformFeeSchema = new mongoose.Schema(
          type: Number,
          required: true,
       },
-      snapchat_application_fee: {
+      facebook_credit_application_fee: {
          type: Number,
          required: true,
       },
-      tiktok_application_fee: {
+      google_credit_application_fee: {
          type: Number,
          required: true,
       },

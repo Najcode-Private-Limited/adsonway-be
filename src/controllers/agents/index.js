@@ -15,12 +15,12 @@ exports.handleCreatUser = asyncHandler(async (req, res) => {
       role = 'user',
       facebook_commission,
       google_commission,
-      snapchat_commission,
-      tiktok_commission,
+      facebook_credit_commission,
+      google_credit_commission,
       facebook_application_fee,
       google_application_fee,
-      snapchat_application_fee,
-      tiktok_application_fee,
+      facebook_credit_application_fee,
+      google_credit_application_fee,
    } = req.body;
 
    if (!email || !username || !password || !full_name) {
@@ -32,12 +32,12 @@ exports.handleCreatUser = asyncHandler(async (req, res) => {
    const feesAndCommissions = [
       facebook_application_fee,
       google_application_fee,
-      snapchat_application_fee,
-      tiktok_application_fee,
+      facebook_credit_commission,
+      google_credit_commission,
       facebook_commission,
       google_commission,
-      snapchat_commission,
-      tiktok_commission,
+      facebook_credit_application_fee,
+      google_credit_application_fee,
    ];
 
    if (feesAndCommissions.some((v) => v === undefined || v === null)) {

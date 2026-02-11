@@ -61,12 +61,12 @@ exports.createUserService = async (agentData, agentId) => {
       userId: newUser._id,
       facebook_commission: agentData.facebook_commission,
       google_commission: agentData.google_commission,
-      snapchat_commission: agentData.snapchat_commission,
-      tiktok_commission: agentData.tiktok_commission,
+      facebook_credit_commission: agentData.facebook_credit_commission,
+      google_credit_commission: agentData.google_credit_commission,
       facebook_application_fee: agentData.facebook_application_fee,
       google_application_fee: agentData.google_application_fee,
-      snapchat_application_fee: agentData.snapchat_application_fee,
-      tiktok_application_fee: agentData.tiktok_application_fee,
+      facebook_credit_application_fee: agentData.facebook_credit_application_fee,
+      google_credit_application_fee: agentData.google_credit_application_fee,
    };
 
    const newPaymentRuleForUser = await createPaymentFeeRule(paymentRulePayload);
