@@ -400,6 +400,7 @@ exports.handleUpdateFacebookAdApplicationStatus = asyncHandler(
                      ? userPaymentRule.facebook_credit_commission
                      : userPaymentRule.facebook_commission || 0,
                   status: 'active',
+                  isCard: checkExistance.isCard || false,
                };
 
                return createNewFacebookAccount(newAccountPayload);

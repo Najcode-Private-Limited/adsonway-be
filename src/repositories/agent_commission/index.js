@@ -54,8 +54,9 @@ const calculateAgentMonthlyCommission = async (agentId, month, year) => {
 
       const facebookCommission = paymentFeeRule?.facebook_commission || 30;
       const googleCommission = paymentFeeRule?.google_commission || 30;
+      const facebookCreditCommission = paymentFeeRule?.facebook_credit_commission || 30;
 
-      const [googleTopups, facebookTopups, googleApps, facebookApps] =
+      const [googleTopups, facebookTopups, googleApps, facebookApps, facebookCreditApps] =
          await Promise.all([
             RequestTopupGoogleId.aggregate([
                {
@@ -99,6 +100,25 @@ const calculateAgentMonthlyCommission = async (agentId, month, year) => {
                   $match: {
                      user: userId,
                      status: 'approved',
+                     isCard: false,
+                     createdAt: { $gte: start, $lte: end },
+                  },
+               },
+               { $unwind: '$adAccounts' },
+               {
+                  $group: {
+                     _id: null,
+                     total: { $sum: '$adAccounts.amount' },
+                     fees: { $sum: '$submissionFee' },
+                  },
+               },
+            ]),
+            FacebookApplication.aggregate([
+               {
+                  $match: {
+                     user: userId,
+                     status: 'approved',
+                     isCard: true,
                      createdAt: { $gte: start, $lte: end },
                   },
                },
@@ -128,20 +148,28 @@ const calculateAgentMonthlyCommission = async (agentId, month, year) => {
          (googleTopups[0]?.total || 0) + (googleApps[0]?.total || 0);
       const userFacebookDeposits =
          (facebookTopups[0]?.total || 0) + (facebookApps[0]?.total || 0);
+      const userFacebookCreditDeposits = facebookCreditApps[0]?.total || 0;
       const userRefunds = refunds[0]?.total || 0;
       const userApplicationFees =
-         (googleApps[0]?.fees || 0) + (facebookApps[0]?.fees || 0);
+         (googleApps[0]?.fees || 0) + (facebookApps[0]?.fees || 0) + (facebookCreditApps[0]?.fees || 0);
+
+      const totalDepositsForUser = userGoogleDeposits + userFacebookDeposits + userFacebookCreditDeposits;
 
       const googleNetAmount =
          userGoogleDeposits -
          userRefunds *
-            (userGoogleDeposits /
-               (userGoogleDeposits + userFacebookDeposits + 0.01));
+         (userGoogleDeposits /
+            (totalDepositsForUser + 0.01));
       const facebookNetAmount =
          userFacebookDeposits -
          userRefunds *
-            (userFacebookDeposits /
-               (userGoogleDeposits + userFacebookDeposits + 0.01));
+         (userFacebookDeposits /
+            (totalDepositsForUser + 0.01));
+      const facebookCreditNetAmount =
+         userFacebookCreditDeposits -
+         userRefunds *
+         (userFacebookCreditDeposits /
+            (totalDepositsForUser + 0.01));
 
       // Calculate commission using user's specific payment rules
       const googleCommissionAmount =
@@ -152,16 +180,21 @@ const calculateAgentMonthlyCommission = async (agentId, month, year) => {
          (facebookNetAmount * (facebookCommission / 100) -
             facebookNetAmount * platformPercentage) *
          agentCommissionPercentage;
+      const facebookCreditCommissionAmount =
+         (facebookCreditNetAmount * (facebookCreditCommission / 100) -
+            facebookCreditNetAmount * platformPercentage) *
+         agentCommissionPercentage;
       const applicationFeeCommission =
          userApplicationFees * agentCommissionPercentage;
 
       const userTotalCommission =
          googleCommissionAmount +
          facebookCommissionAmount +
+         facebookCreditCommissionAmount +
          applicationFeeCommission;
 
       // Accumulate totals
-      totalDeposits += userGoogleDeposits + userFacebookDeposits;
+      totalDeposits += userGoogleDeposits + userFacebookDeposits + userFacebookCreditDeposits;
       totalRefunds += userRefunds;
       totalApplicationFees += userApplicationFees;
       calculatedCommission += userTotalCommission;
